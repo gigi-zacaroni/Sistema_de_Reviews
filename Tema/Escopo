@@ -1,62 +1,80 @@
-Tema da aplicação
+# Sistema de Review de Jogos
 
-Sistema de Avaliação e Review de Jogos
+## Tema
 
-A aplicação será uma plataforma web destinada a jogadores que desejam consultar, avaliar e publicar reviews sobre jogos eletrônicos. O sistema permitirá que os usuários encontrem jogos, visualizem informações sobre eles e consultem avaliações e opiniões de outros jogadores.
+O projeto consiste no desenvolvimento de um sistema web de **avaliação e review de jogos eletrônicos**. A aplicação terá como objetivo permitir que jogadores consultem informações sobre jogos, publiquem avaliações e compartilhem suas opiniões com outros usuários.
 
-Além de visualizar reviews, usuários cadastrados poderão atribuir notas, escrever avaliações e interagir com o conteúdo, possibilitando a formação de uma comunidade de jogadores e facilitando a escolha de novos jogos.
+O sistema também permitirá a atribuição de notas aos jogos, possibilitando o cálculo de uma média geral das avaliações realizadas pela comunidade.
 
-Escopo da aplicação
+---
 
-O escopo define as funcionalidades que farão parte do sistema e os limites do projeto.
+## Escopo da Aplicação
 
-1. Cadastro e autenticação
+O escopo define as funcionalidades que serão desenvolvidas e os limites do sistema.
 
-Cadastro de usuários.
-Login e logout.
-Alteração de informações do perfil.
-Gerenciamento básico da conta.
+### 1. Cadastro e Autenticação
 
-2. Gerenciamento de jogos
+- Cadastro de usuários;
+- Login e logout;
+- Alteração das informações do perfil;
+- Gerenciamento básico da conta do usuário.
 
-Cadastro de jogos no sistema.
-Registro de informações como:
-Nome;
-Gênero;
-Plataforma;
-Data de lançamento;
-Desenvolvedora;
-Publicadora;
-Descrição.
-Edição e exclusão de jogos por usuários administradores.
+### 2. Gerenciamento de Jogos
 
-3. Consulta de jogos
+- Cadastro de jogos;
+- Registro das informações dos jogos, como:
+  - Nome;
+  - Gênero;
+  - Plataforma;
+  - Data de lançamento;
+  - Desenvolvedora;
+  - Publicadora;
+  - Descrição;
+- Edição de informações dos jogos;
+- Exclusão de jogos por administradores.
 
-Listagem dos jogos cadastrados.
-Busca por nome.
-Filtros por gênero e plataforma.
-Visualização da página individual de cada jogo.
+### 3. Consulta de Jogos
 
-4. Sistema de reviews
+- Listagem dos jogos cadastrados;
+- Busca de jogos por nome;
+- Filtros por gênero e plataforma;
+- Visualização detalhada de cada jogo.
 
-Usuários cadastrados poderão publicar uma review sobre um jogo.
+### 4. Sistema de Reviews
+
+Usuários cadastrados poderão publicar reviews sobre os jogos.
+
 Cada review poderá conter:
-Título;
-Texto da avaliação;
-Nota, por exemplo, de 0 a 10;
-Data da publicação.
-O usuário poderá editar ou excluir suas próprias reviews.
-O sistema exibirá as reviews na página do jogo.
 
-5. Avaliação dos jogos
+- Título;
+- Texto da avaliação;
+- Nota de 0 a 10;
+- Data de publicação.
 
-Usuários poderão atribuir uma nota aos jogos.
-O sistema calculará a média das avaliações.
-A média será exibida na página do jogo.
-Poderá ser exibida a quantidade de avaliações recebidas.
+Além disso:
 
-6. Interação com reviews
+- O usuário poderá editar suas próprias reviews;
+- O usuário poderá excluir suas próprias reviews;
+- As reviews serão exibidas na página do respectivo jogo.
 
-Usuários poderão visualizar as reviews de outros jogadores.
-Poderá haver um sistema de curtidas ou votos úteis.
-O sistema poderá permitir denúncias de reviews inadequadas.
+### 5. Avaliação dos Jogos
+
+- Atribuição de notas aos jogos;
+- Cálculo da média das avaliações;
+- Exibição da média geral do jogo;
+- Exibição da quantidade de avaliações recebidas.
+
+### 6. Interação com Reviews
+
+- Visualização das reviews publicadas por outros usuários;
+- Possibilidade de marcar uma review como útil ou curtir;
+- Possibilidade de denunciar reviews inadequadas.
+
+
+---
+
+## Resumo
+
+O sistema terá como objetivo fornecer uma plataforma onde jogadores possam **consultar jogos, publicar reviews, atribuir notas e compartilhar opiniões com outros usuários**.
+
+A aplicação terá funcionalidades de cadastro e autenticação, gerenciamento e consulta de jogos, publicação de reviews, avaliação dos jogos e interação entre usuários.
