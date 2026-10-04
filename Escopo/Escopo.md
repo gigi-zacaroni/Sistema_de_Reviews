@@ -10,8 +10,6 @@ O sistema também permitirá a atribuição de notas aos jogos, possibilitando o
 
 # Escopo da Aplicação
 
-O escopo define as funcionalidades que serão desenvolvidas e os limites do sistema.
-
 ## 1. Cadastro e Autenticação
 
 - Cadastro de usuários;
