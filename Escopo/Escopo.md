@@ -70,8 +70,15 @@ Além disso:
 
 ---
 
-## Resumo
+## Tecnologias 
 
-O sistema terá como objetivo fornecer uma plataforma onde jogadores possam **consultar jogos, publicar reviews, atribuir notas e compartilhar opiniões com outros usuários**.
+| Categoria | Tecnologia | Finalidade no projeto |
+|---|---|---|
+| Linguagem | Node.js + JavaScript | Base obrigatória da API |
+| Banco de dados | MySQL | Persistência relacional de usuários, jogos, gêneros e reviews |
+| Autenticação | JWT (jsonwebtoken) | Login por e-mail e senha, com perfis Usuário Comum e Administrador |
+| API externa | RAWG API | Busca de dados e capas de jogos para facilitar o cadastro de jogos |
+| Documentação da API | Swagger (swagger-ui-express) | Documentação interativa dos endpoints |
+|Testes de API | Postman | Collection com todos os endpoints (autenticação, recuperação de senha, CRUDs e integração externa), usada para testar e avaliar a API |
+|Conteinerização | Docker + Docker Compose | Subir API e banco com `docker-compose up` |
 
-A aplicação terá funcionalidades de cadastro e autenticação, gerenciamento e consulta de jogos, publicação de reviews, avaliação dos jogos e interação entre usuários.
