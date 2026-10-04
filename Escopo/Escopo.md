@@ -78,7 +78,6 @@ Além disso:
 | Banco de dados | MySQL | Persistência relacional de usuários, jogos, gêneros e reviews |
 | Autenticação | JWT (jsonwebtoken) | Login por e-mail e senha, com perfis Usuário Comum e Administrador |
 | API externa | RAWG API | Busca de dados e capas de jogos para facilitar o cadastro de jogos |
-| Documentação da API | Swagger (swagger-ui-express) | Documentação interativa dos endpoints |
 |Testes de API | Postman | Collection com todos os endpoints (autenticação, recuperação de senha, CRUDs e integração externa), usada para testar e avaliar a API |
 |Conteinerização | Docker + Docker Compose | Subir API e banco com `docker-compose up` |
 
