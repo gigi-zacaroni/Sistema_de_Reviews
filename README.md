@@ -107,8 +107,12 @@ Todas as operações de CRUD fazem sentido no domínio e estão previstas. Nenhu
 
 # Endpoints
 
-- -para serem preenchidos futuramente
+para serem preenchidos futuramente
 
 | Grupo | Método | Caminho | Descrição | Permissão | Requisição | Resposta |
 |---|---|---|---|---|---|---|
+|       |         |         |           |          |             |         |
+|       |         |         |           |          |             |         |
+|       |         |         |           |          |             |         |
+
 
