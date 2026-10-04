@@ -8,18 +8,18 @@ O sistema também permitirá a atribuição de notas aos jogos, possibilitando o
 
 ---
 
-## Escopo da Aplicação
+# Escopo da Aplicação
 
 O escopo define as funcionalidades que serão desenvolvidas e os limites do sistema.
 
-### 1. Cadastro e Autenticação
+## 1. Cadastro e Autenticação
 
 - Cadastro de usuários;
 - Login e logout;
 - Alteração das informações do perfil;
 - Gerenciamento básico da conta do usuário.
 
-### 2. Gerenciamento de Jogos
+## 2. Gerenciamento de Jogos
 
 - Cadastro de jogos;
 - Registro das informações dos jogos, como:
@@ -33,14 +33,14 @@ O escopo define as funcionalidades que serão desenvolvidas e os limites do sist
 - Edição de informações dos jogos;
 - Exclusão de jogos por administradores.
 
-### 3. Consulta de Jogos
+## 3. Consulta de Jogos
 
 - Listagem dos jogos cadastrados;
 - Busca de jogos por nome;
 - Filtros por gênero e plataforma;
 - Visualização detalhada de cada jogo.
 
-### 4. Sistema de Reviews
+## 4. Sistema de Reviews
 
 Usuários cadastrados poderão publicar reviews sobre os jogos.
 
@@ -57,19 +57,18 @@ Além disso:
 - O usuário poderá excluir suas próprias reviews;
 - As reviews serão exibidas na página do respectivo jogo.
 
-### 5. Avaliação dos Jogos
+## 5. Avaliação dos Jogos
 
 - Atribuição de notas aos jogos;
 - Cálculo da média das avaliações;
 - Exibição da média geral do jogo;
 - Exibição da quantidade de avaliações recebidas.
 
-### 6. Interação com Reviews
+## 6. Interação com Reviews
 
 - Visualização das reviews publicadas por outros usuários;
 - Possibilidade de marcar uma review como útil ou curtir;
 - Possibilidade de denunciar reviews inadequadas.
-
 
 ---
 
