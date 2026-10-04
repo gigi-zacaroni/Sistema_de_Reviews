@@ -1,1 +1,62 @@
+Tema da aplicação
 
+Sistema de Avaliação e Review de Jogos
+
+A aplicação será uma plataforma web destinada a jogadores que desejam consultar, avaliar e publicar reviews sobre jogos eletrônicos. O sistema permitirá que os usuários encontrem jogos, visualizem informações sobre eles e consultem avaliações e opiniões de outros jogadores.
+
+Além de visualizar reviews, usuários cadastrados poderão atribuir notas, escrever avaliações e interagir com o conteúdo, possibilitando a formação de uma comunidade de jogadores e facilitando a escolha de novos jogos.
+
+Escopo da aplicação
+
+O escopo define as funcionalidades que farão parte do sistema e os limites do projeto.
+
+1. Cadastro e autenticação
+
+Cadastro de usuários.
+Login e logout.
+Alteração de informações do perfil.
+Gerenciamento básico da conta.
+
+2. Gerenciamento de jogos
+
+Cadastro de jogos no sistema.
+Registro de informações como:
+Nome;
+Gênero;
+Plataforma;
+Data de lançamento;
+Desenvolvedora;
+Publicadora;
+Descrição.
+Edição e exclusão de jogos por usuários administradores.
+
+3. Consulta de jogos
+
+Listagem dos jogos cadastrados.
+Busca por nome.
+Filtros por gênero e plataforma.
+Visualização da página individual de cada jogo.
+
+4. Sistema de reviews
+
+Usuários cadastrados poderão publicar uma review sobre um jogo.
+Cada review poderá conter:
+Título;
+Texto da avaliação;
+Nota, por exemplo, de 0 a 10;
+Data da publicação.
+O usuário poderá editar ou excluir suas próprias reviews.
+O sistema exibirá as reviews na página do jogo.
+
+5. Avaliação dos jogos
+
+Usuários poderão atribuir uma nota aos jogos.
+O sistema calculará a média das avaliações.
+A média será exibida na página do jogo.
+Poderá ser exibida a quantidade de avaliações recebidas.
+
+6. Interação com reviews
+
+Usuários poderão visualizar as reviews de outros jogadores.
+Poderá haver um sistema de curtidas ou votos úteis.
+O sistema poderá permitir denúncias de reviews inadequadas.
