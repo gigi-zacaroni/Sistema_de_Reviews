@@ -2,7 +2,7 @@
 
 ## Descrição do modelo
 
-O Sistema de Reviews de Jogos é uma API REST desenvolvida em Node.js com JavaScript, com persistência em banco de dados relacional, que gerencia avaliações de jogos feitas por usuários autenticados. O domínio é modelado em quatro entidades de negócio: Usuario, Genero, Jogo e Review. Os relacionamentos são todos 1:N: um gênero agrupa vários jogos, e um usuário e um jogo se relacionam com várias reviews. A Review é uma entidade com atributos próprios (nota, comentário e datas de criação e atualização) e regras específicas, não uma tabela associativa.
+O Sistema de Reviews de Jogos é uma aplicação desenvolvida em Node.js com JavaScript, com persistência em banco de dados relacional, que gerencia avaliações de jogos feitas por usuários autenticados. O domínio é modelado em quatro entidades de negócio: Usuario, Genero, Jogo e Review. Os relacionamentos são todos 1:N: um gênero agrupa vários jogos, e um usuário e um jogo se relacionam com várias reviews. A Review é uma entidade com atributos próprios (nota, comentário e datas de criação e atualização) e regras específicas, não uma tabela associativa.
 
 A autenticação é feita por e-mail e senha, com emissão de token JWT. As senhas são armazenadas apenas como hash, e o controle de acesso é aplicado por perfil (Usuário Comum e Administrador) e por propriedade do recurso, de modo que somente o autor pode editar ou excluir a própria review. A camada de validação garante e-mail único, nota no intervalo de 0,0 a 10,0, gênero obrigatório em todo jogo e uma única review por par usuário-jogo,
 
