@@ -1,0 +1,46 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: reviews_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root_pass
+      MYSQL_DATABASE: sistema_reviews
+      MYSQL_USER: reviews_user
+      MYSQL_PASSWORD: reviews_pass
+      TZ: America/Sao_Paulo
+    ports:
+      - "3308:3306"   # 3307 no seu computador, para não conflitar com um MySQL local
+    volumes:
+      - db_data:/var/lib/mysql
+      # Scripts rodam em ordem alfabética, só na primeira criação do volume:
+      # schema.sql (tabelas) e depois seed.sql (dados iniciais)
+      - ./Banco:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot_pass"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  api:
+    build: ./Back
+    container_name: reviews_api
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - path: ./Back/.env
+        required: false
+    environment:
+      PORT: 3000
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_USER: reviews_user
+      DB_PASSWORD: reviews_pass
+      DB_NAME: sistema_reviews
+    ports:
+      - "3000:3000"
+
+volumes:
+  db_data:
