@@ -70,5 +70,4 @@ Para usar o MySQL Workbench: host `127.0.0.1`, porta `3308`, usuário `reviews_u
 |---|---|---|
 | `port is already allocated` | Outro programa usa a porta 3000 ou 3308 | Feche o programa ou troque a porta à esquerda dos `:` no `docker-compose.yml` |
 | `/health` retorna `"banco": "indisponivel"` | O MySQL ainda está iniciando | Aguarde alguns segundos e atualize |
-| Mudei o `schema.sql` e nada mudou | O volume antigo já existia | Rode `docker compose down -v` e suba de novo |
 | Importação falha com "RAWG_API_KEY não foi carregada" | `Back/.env` ausente ou sem a chave | Crie o arquivo a partir de `.env.example` e preencha a chave |
