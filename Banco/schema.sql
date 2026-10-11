@@ -1,9 +1,3 @@
--- =====================================================================
--- Sistema de Reviews de Jogos - Script de criação do banco (MySQL 8)
--- Para gerar o diagrama no MySQL Workbench:
---   File > Import > Reverse Engineer MySQL Create Script...
---   (selecione este arquivo) > Execute > Next > Finish
--- =====================================================================
 
 CREATE DATABASE IF NOT EXISTS sistema_reviews
   DEFAULT CHARACTER SET utf8mb4
@@ -21,10 +15,8 @@ DROP TABLE IF EXISTS plataforma;
 DROP TABLE IF EXISTS genero;
 DROP TABLE IF EXISTS usuario;
 
--- ---------------------------------------------------------------------
 -- USUARIO
--- Regra 1: e-mail único | Regra 2: somente o hash da senha é armazenado
--- ---------------------------------------------------------------------
+-- Regra 1: e-mail único | Regra 2: somente o hash da senha é armazenado--
 CREATE TABLE usuario (
   id_usuario  INT UNSIGNED  NOT NULL AUTO_INCREMENT,
   nome        VARCHAR(100)  NOT NULL,
@@ -36,9 +28,7 @@ CREATE TABLE usuario (
   UNIQUE KEY uq_usuario_email (email)
 ) ENGINE=InnoDB;
 
--- ---------------------------------------------------------------------
 -- GENERO
--- ---------------------------------------------------------------------
 CREATE TABLE genero (
   id_genero  INT UNSIGNED  NOT NULL AUTO_INCREMENT,
   nome       VARCHAR(60)   NOT NULL,
@@ -47,9 +37,8 @@ CREATE TABLE genero (
   UNIQUE KEY uq_genero_nome (nome)
 ) ENGINE=InnoDB;
 
--- ---------------------------------------------------------------------
+
 -- PLATAFORMA (usada nos filtros de busca do escopo)
--- ---------------------------------------------------------------------
 CREATE TABLE plataforma (
   id_plataforma  INT UNSIGNED  NOT NULL AUTO_INCREMENT,
   nome           VARCHAR(60)   NOT NULL,
@@ -57,13 +46,12 @@ CREATE TABLE plataforma (
   UNIQUE KEY uq_plataforma_nome (nome)
 ) ENGINE=InnoDB;
 
--- ---------------------------------------------------------------------
+
 -- JOGO
 -- Regra 10: id_genero obrigatório (NOT NULL)
 -- Regra 7: não é possível excluir um gênero que tenha jogos (RESTRICT)
 -- nota_media é recalculada pela aplicação (regra 6)
 -- rawg_id e capa_url guardam os dados vindos da API RAWG
--- ---------------------------------------------------------------------
 CREATE TABLE jogo (
   id_jogo          INT UNSIGNED   NOT NULL AUTO_INCREMENT,
   id_genero        INT UNSIGNED   NOT NULL,
@@ -85,9 +73,8 @@ CREATE TABLE jogo (
   CONSTRAINT ck_jogo_nota_media CHECK (nota_media BETWEEN 0.0 AND 10.0)
 ) ENGINE=InnoDB;
 
--- ---------------------------------------------------------------------
+
 -- JOGO_PLATAFORMA (relação N:N entre jogo e plataforma)
--- ---------------------------------------------------------------------
 CREATE TABLE jogo_plataforma (
   id_jogo        INT UNSIGNED NOT NULL,
   id_plataforma  INT UNSIGNED NOT NULL,
@@ -101,13 +88,12 @@ CREATE TABLE jogo_plataforma (
     ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB;
 
--- ---------------------------------------------------------------------
+-
 -- REVIEW
 -- Regra 3: autoria (verificada pela aplicação) | atualizado_em muda ao editar
 -- Regra 4: uma review por usuário por jogo (UNIQUE)
 -- Regra 5: nota entre 0,0 e 10,0 (CHECK)
 -- Regras 8 e 9: exclusão em cascata ao apagar o jogo ou o usuário
--- ---------------------------------------------------------------------
 CREATE TABLE review (
   id_review      INT UNSIGNED   NOT NULL AUTO_INCREMENT,
   id_usuario     INT UNSIGNED   NOT NULL,
@@ -130,9 +116,8 @@ CREATE TABLE review (
   CONSTRAINT ck_review_nota CHECK (nota BETWEEN 0.0 AND 10.0)
 ) ENGINE=InnoDB;
 
--- ---------------------------------------------------------------------
+
 -- REVIEW_CURTIDA (marcar review como útil; um usuário curte uma vez)
--- ---------------------------------------------------------------------
 CREATE TABLE review_curtida (
   id_review   INT UNSIGNED NOT NULL,
   id_usuario  INT UNSIGNED NOT NULL,
@@ -147,9 +132,8 @@ CREATE TABLE review_curtida (
     ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB;
 
--- ---------------------------------------------------------------------
+
 -- REVIEW_DENUNCIA (denunciar review inadequada; uma denúncia por usuário)
--- ---------------------------------------------------------------------
 CREATE TABLE review_denuncia (
   id_denuncia  INT UNSIGNED  NOT NULL AUTO_INCREMENT,
   id_review    INT UNSIGNED  NOT NULL,
