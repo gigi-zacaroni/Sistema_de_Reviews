@@ -31,7 +31,7 @@ O projeto roda inteiro em Docker: um comando sobe a API e o banco.
 ## Diagrama EER 
 
 ### Imagem do diagrama :
-[Diagrama_EER](Imagens/Diagrama_EER.png)
+[Diagrama_EER](Banco/Diagrama_EER.png)
 
 ### Regras de negócio detalhadas: [Regras_de_negócio](Sprints/Sprint-1.md)
 
