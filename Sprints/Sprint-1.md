@@ -171,8 +171,6 @@ erDiagram
     }
 ```
 
-Para gerar o diagrama no MySQL Workbench: **File → Import → Reverse Engineer MySQL Create Script**, selecione `Banco/schema.sql` e siga o assistente. O diagrama já pronto está em `Banco/EER_diagrama.mwb`.
-
 ## CRUD por entidade
 
 Todas as operações de CRUD fazem sentido no domínio e estão previstas no modelo. Nenhuma foi omitida; algumas têm restrições, descritas nas regras de negócio.
