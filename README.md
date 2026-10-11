@@ -8,7 +8,7 @@ O projeto roda inteiro em Docker: um comando sobe a API e o banco.
 
 | Categoria | Tecnologia | Uso no projeto |
 |---|---|---|
-| Linguagem | Node.js 22 + JavaScript (ES Modules) | API |
+| Linguagem | Node.js + JavaScript | API |
 | Framework | Express 5 | Rotas HTTP |
 | Banco de dados | MySQL 8 (driver `mysql2`) | Persistência relacional |
 | API externa | RAWG API | Busca e importação de jogos |
