@@ -1,10 +1,10 @@
 # Semana 2: 
 
-### Conclusão da modelagem , persitência e base da aplicação executável com docker
+ Conclusão da modelagem , persitência e base da aplicação executável com docker
 
 ## O que foi desenvolvido :
 
-### Conclusão do Diagrama EER,  criação do banco de dados em MySQL e integração da API
+ Conclusão do Diagrama EER,  criação do banco de dados em MySQL e integração da API
 
 ## Como executar com Docker
 
@@ -15,7 +15,8 @@
 cd Sistema_de_Reviews
 
 # necessário para a integração com a RAWG :
-# abra Back/.env e preencha RAWG_API_KEY
+# crie o arquivo ".env" dentro da pasta "Back" e preencha RAWG_API_KEY="sua_chave"
+# para gerar uma chave , acesse "https://rawg.io/apidocs" e faça login
 
 docker compose up --build
 ```
@@ -28,9 +29,6 @@ O Compose sobe dois contêineres:
 | `api` | API Node.js/Express. Só inicia depois que o banco estiver saudável. | 3000 |
 
 A subida terminou quando o terminal mostrar `API rodando na porta 3000`.
-
-**Parar:** `Ctrl + C`, ou `docker compose down` (os dados continuam salvos).
-**Recriar o banco do zero:** `docker compose down -v` (apaga o volume). Isso é necessário depois de qualquer mudança no `schema.sql`, pois o MySQL só executa os scripts da pasta `Banco` na primeira criação do volume.
 
 ## Como testar
 
@@ -72,5 +70,4 @@ Para usar o MySQL Workbench: host `127.0.0.1`, porta `3308`, usuário `reviews_u
 |---|---|---|
 | `port is already allocated` | Outro programa usa a porta 3000 ou 3308 | Feche o programa ou troque a porta à esquerda dos `:` no `docker-compose.yml` |
 | `/health` retorna `"banco": "indisponivel"` | O MySQL ainda está iniciando | Aguarde alguns segundos e atualize |
-| Mudei o `schema.sql` e nada mudou | O volume antigo já existia | Rode `docker compose down -v` e suba de novo |
 | Importação falha com "RAWG_API_KEY não foi carregada" | `Back/.env` ausente ou sem a chave | Crie o arquivo a partir de `.env.example` e preencha a chave |

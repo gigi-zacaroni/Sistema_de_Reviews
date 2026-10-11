@@ -100,7 +100,7 @@ classDiagram
 
 ## Modelo do banco de dados
 
-O script de criação está em [`Banco/schema.sql`](Banco/schema.sql). O banco é criado vazio: os jogos, gêneros e plataformas entram pela [importação da RAWG](#2-popular-o-banco-com-jogos-da-rawg).
+O script de criação está em [`Banco/schema.sql`](Banco/schema.sql). O banco é criado vazio: os jogos, gêneros e plataformas entram pela importação da RAWG
 
 ```mermaid
 erDiagram
@@ -170,8 +170,6 @@ erDiagram
         datetime criado_em
     }
 ```
-
-Para gerar o diagrama no MySQL Workbench: **File → Import → Reverse Engineer MySQL Create Script**, selecione `Banco/schema.sql` e siga o assistente. O diagrama já pronto está em `Banco/EER_diagrama.mwb`.
 
 ## CRUD por entidade
 

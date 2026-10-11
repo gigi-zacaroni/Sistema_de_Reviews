@@ -8,7 +8,7 @@ O projeto roda inteiro em Docker: um comando sobe a API e o banco.
 
 | Categoria | Tecnologia | Uso no projeto |
 |---|---|---|
-| Linguagem | Node.js 22 + JavaScript (ES Modules) | API |
+| Linguagem | Node.js + JavaScript | API |
 | Framework | Express 5 | Rotas HTTP |
 | Banco de dados | MySQL 8 (driver `mysql2`) | Persistência relacional |
 | API externa | RAWG API | Busca e importação de jogos |
@@ -33,9 +33,9 @@ O projeto roda inteiro em Docker: um comando sobe a API e o banco.
 ### Imagem do diagrama :
 [Diagrama_EER](Imagens/Diagrama_EER.png)
 
-### Regras de negócio detalhadas:
+### Regras de negócio detalhadas: [Regras_de_negócio](Sprints/Sprint-1.md)
 
-[Regras_de_negócio](Sprints/Sprint-1.md)
+
 
 | Tabela | Função | Principais restrições | Regras de negócio |
 |---|---|---|---|
@@ -65,7 +65,7 @@ O projeto roda inteiro em Docker: um comando sobe a API e o banco.
 
 | Semana | requisitos | link | 
 |---|---|---|
-| Semana 2 | modelagem concluída , persistência e base da aplicação executável com Docker | como executar: [Sprint-2](Sprints/Sprint-2.md) |
+| Semana 2 | modelagem concluída , persistência e base da aplicação executável com Docker | ***como executar e testar o código***: [Sprint-2](Sprints/Sprint-2.md) |
 
 ### Endpoints
 
@@ -74,7 +74,6 @@ O projeto roda inteiro em Docker: um comando sobe a API e o banco.
 |---|---|---|---|---|---|---|
 | Sistema | GET | `/health` | Verifica se a API está no ar e se consegue consultar o banco | Pública | — | `200` `{"api":"ok","banco":"ok"}`; `503` se o banco estiver indisponível |
 | Gêneros | GET | `/generos` | Lista os gêneros, em ordem alfabética | Pública | — | `200` lista com `id_genero`, `nome`, `descricao` |
-| Usuários | GET | `/usuarios` | Lista os usuários (nunca devolve `senha_hash`) | Pública por enquanto; será restrita ao administrador | — | `200` lista com `id_usuario`, `nome`, `email`, `perfil`, `criado_em` |
 | RAWG | GET | `/rawg/jogos` | Busca até 10 jogos na RAWG pelo nome | Pública | Query `busca` (obrigatória) | `200` lista com `rawg_id`, `titulo`, `data_lancamento`, `capa_url`; `400` sem `busca`; `502` se a RAWG falhar |
 
 

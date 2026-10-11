@@ -10,11 +10,9 @@ services:
       MYSQL_PASSWORD: reviews_pass
       TZ: America/Sao_Paulo
     ports:
-      - "3308:3306"   # 3307 no seu computador, para não conflitar com um MySQL local
+      - "3308:3306"   
     volumes:
       - db_data:/var/lib/mysql
-      # Scripts rodam em ordem alfabética, só na primeira criação do volume:
-      # schema.sql (tabelas) e depois seed.sql (dados iniciais)
       - ./Banco:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot_pass"]
