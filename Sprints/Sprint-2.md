@@ -1,10 +1,10 @@
 # Semana 2: 
 
-### Conclusão da modelagem , persitência e base da aplicação executável com docker
+ Conclusão da modelagem , persitência e base da aplicação executável com docker
 
 ## O que foi desenvolvido :
 
-### Conclusão do Diagrama EER,  criação do banco de dados em MySQL e integração da API
+ Conclusão do Diagrama EER,  criação do banco de dados em MySQL e integração da API
 
 ## Como executar com Docker
 
