@@ -30,9 +30,6 @@ O Compose sobe dois contêineres:
 
 A subida terminou quando o terminal mostrar `API rodando na porta 3000`.
 
-**Parar:** `Ctrl + C`, ou `docker compose down` (os dados continuam salvos).
-**Recriar o banco do zero:** `docker compose down -v` (apaga o volume). Isso é necessário depois de qualquer mudança no `schema.sql`, pois o MySQL só executa os scripts da pasta `Banco` na primeira criação do volume.
-
 ## Como testar
 
 ### 1. Verificar se tudo está no ar
