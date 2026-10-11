@@ -33,9 +33,9 @@ O projeto roda inteiro em Docker: um comando sobe a API e o banco.
 ### Imagem do diagrama :
 [Diagrama_EER](Imagens/Diagrama_EER.png)
 
-### Regras de negócio detalhadas:
+### Regras de negócio detalhadas: [Regras_de_negócio](Sprints/Sprint-1.md)
 
-[Regras_de_negócio](Sprints/Sprint-1.md)
+
 
 | Tabela | Função | Principais restrições | Regras de negócio |
 |---|---|---|---|
