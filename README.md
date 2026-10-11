@@ -65,7 +65,7 @@ O projeto roda inteiro em Docker: um comando sobe a API e o banco.
 
 | Semana | requisitos | link | 
 |---|---|---|
-| Semana 2 | modelagem concluída , persistência e base da aplicação executável com Docker | como executar e testar o código: [Sprint-2](Sprints/Sprint-2.md) |
+| Semana 2 | modelagem concluída , persistência e base da aplicação executável com Docker | ***como executar e testar o código***: [Sprint-2](Sprints/Sprint-2.md) |
 
 ### Endpoints
 
