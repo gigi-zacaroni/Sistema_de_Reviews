@@ -16,6 +16,7 @@ cd Sistema_de_Reviews
 
 # necessário para a integração com a RAWG :
 # abra Back/.env e preencha RAWG_API_KEY
+# para gerar uma chave , acesse "https://rawg.io/apidocs" e faça login
 
 docker compose up --build
 ```
