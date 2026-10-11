@@ -12,7 +12,7 @@
 
 ```bash
 
-cd Sistema_de_Reviews
+cd Sistema_de_Reviews-main
 
 # necessário para a integração com a RAWG :
 # crie o arquivo ".env" dentro da pasta "Back" e preencha RAWG_API_KEY="sua_chave"
