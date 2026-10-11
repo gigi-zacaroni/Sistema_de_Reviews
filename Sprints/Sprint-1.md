@@ -100,7 +100,7 @@ classDiagram
 
 ## Modelo do banco de dados
 
-O script de criação está em [`Banco/schema.sql`](Banco/schema.sql). O banco é criado vazio: os jogos, gêneros e plataformas entram pela [importação da RAWG](#2-popular-o-banco-com-jogos-da-rawg).
+O script de criação está em [`Banco/schema.sql`](Banco/schema.sql). O banco é criado vazio: os jogos, gêneros e plataformas entram pela importação da RAWG
 
 ```mermaid
 erDiagram
