@@ -14,7 +14,7 @@ services:
     volumes:
       - db_data:/var/lib/mysql
       # Scripts rodam em ordem alfabética, só na primeira criação do volume:
-      # schema.sql (tabelas) e depois seed.sql (dados iniciais)
+      # schema.sql (tabelas) 
       - ./Banco:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot_pass"]
