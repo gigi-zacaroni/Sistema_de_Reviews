@@ -35,7 +35,7 @@ O projeto roda inteiro em Docker: um comando sobe a API e o banco.
 
 ### Regras de negócio detalhadas: [Regras_de_negócio](Sprints/Sprint-1.md)
 
-
+### Resumo do schema.sql
 
 | Tabela | Função | Principais restrições | Regras de negócio |
 |---|---|---|---|
