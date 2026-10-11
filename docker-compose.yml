@@ -13,8 +13,6 @@ services:
       - "3308:3306"   
     volumes:
       - db_data:/var/lib/mysql
-      # Scripts rodam em ordem alfabética, só na primeira criação do volume:
-      # schema.sql (tabelas) 
       - ./Banco:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot_pass"]
