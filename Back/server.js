@@ -63,7 +63,7 @@ app.get("/rawg/jogos", async (req, res) => {
 
     const dados = await resposta.json();
 
-    // Devolve só o que o seu banco usa (colunas da tabela jogo)
+    // Devolve só o que o banco usa (colunas da tabela jogo)
     res.json(
       dados.results.map((j) => ({
         rawg_id: j.id,
