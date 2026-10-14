@@ -68,7 +68,7 @@ O projeto roda inteiro em Docker: um comando sobe a API e o banco.
 | Grupo | Método | Caminho | Descrição | Permissão | Requisição | Resposta |
 |---|---|---|---|---|---|---|
 | Sistema | GET | `/health` | Verifica se a API está no ar e se consegue consultar o banco | Pública | — | `200` `{"api":"ok","banco":"ok"}`; `503` se o banco estiver indisponível |
-| Gêneros | GET | `/generos` | Lista os gêneros, em ordem alfabética | Pública | — | `200` lista com `id_genero`, `nome`, `descricao` |
+| Gêneros | GET | `/generos` | Lista os gêneros, em ordem alfabética | Pública | — | `200` lista com `id_genero`, `nome`, `descricao` ; `500`se a consulta falhar |
 | Usuários | GET | `/usuarios` | Lista os usuários cadastrados (nunca devolve a `senha_hash`) | Pública | — | `200` lista com `id_usuario`, `nome`, `email`, `perfil`, `criado_em`; `500` se a consulta falhar |
 | RAWG | GET | `/rawg/jogos` | Busca até 10 jogos na RAWG pelo nome | Pública | Query `busca` (obrigatória) | `200` lista com `rawg_id`, `titulo`, `data_lancamento`, `capa_url`; `400` sem `busca`; `502` se a RAWG falhar |
 
