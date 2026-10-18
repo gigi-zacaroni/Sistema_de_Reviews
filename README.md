@@ -63,7 +63,7 @@ O projeto roda inteiro em Docker: um comando sobe a API e o banco.
 |---|---|---|---|
 | Semana 1 | definição do tema e escopo , modelagem inicial e criação e envio do repositório |[Sprint-1](Sprints/Sprint-1.md) | [Commit](https://github.com/gigi-zacaroni/Sistema_de_Reviews/commit/99be1da5d5089d59d23d84a82b5738c1c031b2ca) |
 | Semana 2 | modelagem concluída , persistência e base da aplicação executável com Docker | ***como executar e testar o código***: [Sprint-2](Sprints/Sprint-2.md) |[Commit](https://github.com/gigi-zacaroni/Sistema_de_Reviews/commit/1e045e90b33d43e380b3316c1bc1281aa368d53e)|
-| Semana 3 | autenticação com JWT (Usuário Comum e Administrador), controle de acesso, CRUDs e recuperação de senha por e-mail | ***como executar e testar o código***: [Sprint-3](Sprints/Sprint-3.md) | — |
+| Semana 3 | autenticação com JWT (Usuário Comum e Administrador), controle de acesso, CRUDs e recuperação de senha por e-mail | ***como executar e testar o código***: [Sprint-3](Sprints/Sprint-3.md) | [Commit](https://github.com/gigi-zacaroni/Sistema_de_Reviews/commit/a06948157ba0def69ca62da2857d413574da23ed) |
 
 ### Endpoints
 
