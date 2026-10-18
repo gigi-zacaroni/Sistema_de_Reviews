@@ -1,0 +1,20 @@
+$kind: http-request
+name: http://localhost:3000/auth/login
+description: ""
+url: http://localhost:3000/usuarios
+method: GET
+body:
+  type: json
+  content: "   {\r
+
+    \     \"email\": \"admin@reviews.com\",\r
+
+    \     \"senha\": \"Admin@12345\"\r
+
+    \   }"
+auth:
+  type: bearer
+  credentials:
+    token: ""
+examples: .resources/http-localhost-3000-auth-login.resources/examples
+order: 1000

@@ -1,7 +1,7 @@
 {
   "name": "sistema_de_reviews",
   "version": "1.0.0",
-  "description": "API de um sistema de reviews de jogos (Node.js, Express e MySQL).",
+  "description": "API de um sistema de reviews de jogos (Node.js, Express, MySQL e JWT).",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -21,8 +21,11 @@
   },
   "homepage": "https://github.com/gigi-zacaroni/Sistema_de_Reviews#readme",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "dotenv": "^16.4.5",
     "express": "^5.2.1",
-    "mysql2": "^3.11.3"
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.11.3",
+    "nodemailer": "^6.9.16"
   }
 }

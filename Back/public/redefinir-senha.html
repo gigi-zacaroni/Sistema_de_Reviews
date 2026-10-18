@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Redefinir senha - Sistema de Reviews</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background: #f3f4f6; margin: 0;
+           min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+    main { background: #fff; padding: 2rem; border-radius: 12px; width: 100%;
+           max-width: 380px; box-shadow: 0 2px 12px rgba(0,0,0,.1); }
+    h1 { font-size: 1.3rem; margin: 0 0 1rem; }
+    label { display: block; font-size: .9rem; margin-top: 1rem; }
+    input { width: 100%; box-sizing: border-box; padding: .6rem; margin-top: .3rem;
+            border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; }
+    button { width: 100%; margin-top: 1.5rem; padding: .7rem; border: 0; border-radius: 6px;
+             background: #4f46e5; color: #fff; font-size: 1rem; cursor: pointer; }
+    button:disabled { opacity: .6; cursor: default; }
+    #mensagem { margin-top: 1rem; font-size: .95rem; }
+    .erro { color: #b91c1c; } .ok { color: #15803d; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Criar nova senha</h1>
+    <form id="formulario">
+      <label>Nova senha (mínimo 8 caracteres)
+        <input type="password" id="senha" minlength="8" required autocomplete="new-password">
+      </label>
+      <label>Repita a nova senha
+        <input type="password" id="confirmacao" minlength="8" required autocomplete="new-password">
+      </label>
+      <button type="submit" id="botao">Redefinir senha</button>
+    </form>
+    <p id="mensagem" role="alert"></p>
+  </main>
+
+  <script>
+    // Pega o token da URL e tira da barra de endereço (fica só na memória da página)
+    const token = new URLSearchParams(location.search).get("token");
+    history.replaceState(null, "", location.pathname);
+
+    const formulario = document.getElementById("formulario");
+    const mensagem = document.getElementById("mensagem");
+    const botao = document.getElementById("botao");
+
+    function mostrar(texto, classe) {
+      mensagem.textContent = texto;
+      mensagem.className = classe;
+    }
+
+    if (!token) {
+      formulario.hidden = true;
+      mostrar("Link inválido. Peça a recuperação de senha novamente.", "erro");
+    }
+
+    formulario.addEventListener("submit", async (evento) => {
+      evento.preventDefault();
+      const senha = document.getElementById("senha").value;
+      if (senha !== document.getElementById("confirmacao").value) {
+        return mostrar("As senhas não são iguais.", "erro");
+      }
+
+      botao.disabled = true;
+      try {
+        const resposta = await fetch("/auth/redefinir-senha", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token, nova_senha: senha }),
+        });
+        const dados = await resposta.json();
+        if (resposta.ok) {
+          formulario.hidden = true;
+          mostrar(dados.mensagem, "ok");
+        } else {
+          mostrar(dados.erro, "erro");
+          botao.disabled = false;
+        }
+      } catch {
+        mostrar("Não foi possível falar com o servidor.", "erro");
+        botao.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

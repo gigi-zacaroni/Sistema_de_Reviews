@@ -15,10 +15,22 @@ services:
       - db_data:/var/lib/mysql
       - ./Banco:/docker-entrypoint-initdb.d:ro
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot_pass"]
+      # 127.0.0.1 força conexão por rede (TCP). Com "localhost" o teste passava ainda durante
+      # a criação inicial do banco, quando o MySQL só aceita conexões locais, e a API
+      # subia antes da hora.
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-proot_pass"]
       interval: 5s
       timeout: 5s
       retries: 20
+
+  # Servidor de e-mail de teste: recebe os e-mails da API e mostra em
+  # http://localhost:8025 (nenhum e-mail sai de verdade para a internet)
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: reviews_mailpit
+    restart: unless-stopped
+    ports:
+      - "8025:8025"
 
   api:
     build: ./Back
@@ -27,6 +39,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      mailpit:
+        condition: service_started
     env_file:
       - path: ./Back/.env
         required: false
@@ -37,6 +51,10 @@ services:
       DB_USER: reviews_user
       DB_PASSWORD: reviews_pass
       DB_NAME: sistema_reviews
+      # E-mails de recuperação de senha vão para o Mailpit.
+      # Para usar um SMTP real, apague estas duas linhas e preencha SMTP_* no Back/.env
+      SMTP_HOST: mailpit
+      SMTP_PORT: 1025
     ports:
       - "3000:3000"
 

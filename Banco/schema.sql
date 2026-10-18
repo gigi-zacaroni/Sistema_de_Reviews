@@ -6,6 +6,7 @@ CREATE DATABASE IF NOT EXISTS sistema_reviews
 USE sistema_reviews;
 
 -- Ordem inversa de dependência, para o script poder ser rodado de novo
+DROP TABLE IF EXISTS recuperacao_senha;
 DROP TABLE IF EXISTS review_denuncia;
 DROP TABLE IF EXISTS review_curtida;
 DROP TABLE IF EXISTS review;
@@ -26,6 +27,23 @@ CREATE TABLE usuario (
   criado_em   DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id_usuario),
   UNIQUE KEY uq_usuario_email (email)
+) ENGINE=InnoDB;
+
+-- RECUPERACAO_SENHA (recuperação de senha por e-mail)
+-- Guarda só o hash (SHA-256) do token enviado por e-mail, nunca o token em si.
+-- O token vale por poucos minutos (expira_em) e é apagado depois de usado.
+CREATE TABLE recuperacao_senha (
+  id_recuperacao  INT UNSIGNED  NOT NULL AUTO_INCREMENT,
+  id_usuario      INT UNSIGNED  NOT NULL,
+  token_hash      CHAR(64)      NOT NULL,
+  expira_em       DATETIME      NOT NULL,
+  criado_em       DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id_recuperacao),
+  UNIQUE KEY uq_recuperacao_token (token_hash),
+  KEY idx_recuperacao_usuario (id_usuario),
+  CONSTRAINT fk_recuperacao_usuario
+    FOREIGN KEY (id_usuario) REFERENCES usuario (id_usuario)
+    ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB;
 
 -- GENERO
@@ -88,7 +106,7 @@ CREATE TABLE jogo_plataforma (
     ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB;
 
--
+
 -- REVIEW
 -- Regra 3: autoria (verificada pela aplicação) | atualizado_em muda ao editar
 -- Regra 4: uma review por usuário por jogo (UNIQUE)

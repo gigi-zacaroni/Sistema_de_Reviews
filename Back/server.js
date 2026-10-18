@@ -1,8 +1,17 @@
 import "dotenv/config";
 import express from "express";
 import { pool } from "./src/db.js";
+import { config } from "./src/config.js";
+import { criarAdminInicial } from "./src/seedAdmin.js";
+import { rotaNaoEncontrada, tratarErros } from "./src/middlewares/erros.js";
+import authRoutes from "./src/routes/auth.js";
+import usuariosRoutes from "./src/routes/usuarios.js";
+import generosRoutes from "./src/routes/generos.js";
+import jogosRoutes from "./src/routes/jogos.js";
+import reviewsRoutes from "./src/routes/reviews.js";
 
 const app = express();
+app.disable("x-powered-by");
 app.use(express.json());
 
 // Verifica se a API está no ar e se consegue falar com o banco
@@ -16,31 +25,14 @@ app.get("/health", async (req, res) => {
   }
 });
 
-// Lista os gêneros do banco (confirma que a persistência funciona)
-app.get("/generos", async (req, res) => {
-  try {
-    const [linhas] = await pool.query(
-      "SELECT id_genero, nome, descricao FROM genero ORDER BY nome"
-    );
-    res.json(linhas);
-  } catch (erro) {
-    console.error(erro.message);
-    res.status(500).json({ erro: "Erro ao consultar gêneros" });
-  }
-});
+// Autenticação e recuperação de senha
+app.use("/auth", authRoutes);
 
-// Lista os usuários (nunca devolve a senha_hash)
-app.get("/usuarios", async (req, res) => {
-  try {
-    const [linhas] = await pool.query(
-      "SELECT id_usuario, nome, email, perfil, criado_em FROM usuario"
-    );
-    res.json(linhas);
-  } catch (erro) {
-    console.error(erro.message);
-    res.status(500).json({ erro: "Erro ao consultar usuários" });
-  }
-});
+// Recursos do sistema (cada rota define quem pode acessar)
+app.use("/usuarios", usuariosRoutes);
+app.use("/generos", generosRoutes);
+app.use("/jogos", jogosRoutes);
+app.use("/reviews", reviewsRoutes);
 
 // Busca jogos na RAWG pelo nome: /rawg/jogos?busca=zelda
 app.get("/rawg/jogos", async (req, res) => {
@@ -78,7 +70,17 @@ app.get("/rawg/jogos", async (req, res) => {
   }
 });
 
-const PORTA = Number(process.env.PORT ?? 3000);
-app.listen(PORTA, () => {
-  console.log(`API rodando na porta ${PORTA}`);
+// Estes dois precisam ser os últimos
+app.use(rotaNaoEncontrada);
+app.use(tratarErros);
+
+// Cria o administrador inicial (se ainda não existir) antes de aceitar requisições
+try {
+  await criarAdminInicial();
+} catch (erro) {
+  console.error("Não foi possível criar o administrador inicial:", erro.message);
+}
+
+app.listen(config.porta, () => {
+  console.log(`API rodando na porta ${config.porta}`);
 });

@@ -1,0 +1,37 @@
+$kind: http-example
+name: http://localhost:3000/auth/login
+request:
+  url: http://localhost:3000/usuarios
+  method: GET
+  body:
+    type: json
+    content: "   {\r
+
+      \     \"email\": \"admin@reviews.com\",\r
+
+      \     \"senha\": \"Admin@12345\"\r
+
+      \   }"
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    content-type: application/json; charset=utf-8
+    content-length: "125"
+    etag: W/"7d-2Loiu0Os++v1wCAnLf7CTHYZ8ro"
+    date: Sun, 18 Oct 2026 15:34:28 GMT
+    connection: keep-alive
+    keep-alive: timeout=5
+  body:
+    type: json
+    content: |-
+      [
+        {
+          "id_usuario": 1,
+          "nome": "Administrador",
+          "email": "admin@reviews.com",
+          "perfil": "ADMIN",
+          "criado_em": "2026-10-18T12:23:55.000Z"
+        }
+      ]
+order: 2000

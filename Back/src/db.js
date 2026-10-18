@@ -11,3 +11,20 @@ export const pool = mysql.createPool({
   waitForConnections: true,
   connectionLimit: 10,
 });
+
+// Executa várias consultas como uma única transação: ou tudo dá certo,
+// ou nada é gravado (rollback). A função recebida usa a conexão passada.
+export async function comTransacao(funcao) {
+  const conexao = await pool.getConnection();
+  try {
+    await conexao.beginTransaction();
+    const resultado = await funcao(conexao);
+    await conexao.commit();
+    return resultado;
+  } catch (erro) {
+    await conexao.rollback();
+    throw erro;
+  } finally {
+    conexao.release();
+  }
+}
