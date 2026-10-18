@@ -97,7 +97,7 @@ docker compose up --build
 
 ## Como testar
 
-Os testes usam o **Postman** (aplicativo para computador). A API precisa estar no ar (`docker compose up`) e o endereço http://localhost:3000/health deve responder `{"api":"ok","banco":"ok"}`.
+Os testes usam o **Postman** . A API precisa estar no ar (`docker compose up`) e o endereço http://localhost:3000/health deve responder `{"api":"ok","banco":"ok"}`.
 
 
 #### 1. Login como administrador
