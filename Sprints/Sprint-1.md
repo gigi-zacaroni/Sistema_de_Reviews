@@ -1,3 +1,7 @@
+# Semana 1
+
+## Criação do modelo de classes e definição do tema e [Escopo](https://github.com/gigi-zacaroni/Sistema_de_Reviews/blob/main/Escopo/Escopo.md)
+
 # Sistema de Reviews de Jogos
 
 ## Descrição do modelo
