@@ -64,7 +64,7 @@ O projeto roda inteiro em Docker: um comando sobe a API e o banco.
 | Semana 1 | definição do tema e escopo , modelagem inicial e criação e envio do repositório |[Sprint-1](Sprints/Sprint-1.md) | [Commit-modelagem]( https://github.com/gigi-zacaroni/Sistema_de_Reviews/commit/d09fcfee72594cbf6abf2183efe07afeaa80e208 ), [Commit-escopo](https://github.com/gigi-zacaroni/Sistema_de_Reviews/commit/235fc16ebcb130cf730af1cba52efcd3c196c3f4)  |
 | Semana 2 | modelagem concluída , persistência e base da aplicação executável com Docker | ***como executar e testar o código***: [Sprint-2](Sprints/Sprint-2.md) |[Commit](https://github.com/gigi-zacaroni/Sistema_de_Reviews/commit/1e045e90b33d43e380b3316c1bc1281aa368d53e)|
 | Semana 3 | autenticação com JWT (Usuário Comum e Administrador), controle de acesso, CRUDs e recuperação de senha por e-mail | ***como executar e testar o código***: [Sprint-3](Sprints/Sprint-3.md) | [Commit](https://github.com/gigi-zacaroni/Sistema_de_Reviews/commit/a06948157ba0def69ca62da2857d413574da23ed) |
-| Semana 4 | CRUD das entidades centrais e regras de negócio em funcionamento | a entrega da semana 4 foi feita , de forma adiantada , na semana 3. Logo, os links são os mesmos | - |
+| Semana 4 | CRUD das entidades centrais e regras de negócio em funcionamento | A entrega da semana 4 foi feita , de forma adiantada , na semana 3. Logo, os links são os mesmos da semana anterior | - |
 
 ### Endpoints
 
