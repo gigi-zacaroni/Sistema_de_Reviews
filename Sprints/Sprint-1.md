@@ -77,6 +77,11 @@ classDiagram
     class Plataforma {
         -id: int
         -nome: String
+        +cadastrar() void
+        +listar() List
+        +consultar() Plataforma
+        +atualizar() void
+        +excluir() void
     }
 
     class Review {
@@ -184,6 +189,7 @@ Todas as operações de CRUD fazem sentido no domínio e estão previstas no mod
 | Usuario | `cadastrar` | `consultar`, `autenticar` | `editarPerfil` | `excluir` |
 | Genero | `cadastrar` | `listar`, `consultar`, `listarJogos` | `atualizar` | `excluir` |
 | Jogo | `cadastrar` | `listar`, `consultar` | `atualizar` | `excluir` |
+| Plataforma | `cadastrar` | `listar`, `consultar` | `atualizar` | `excluir` |
 | Review | `publicar` | `listarPorJogo`, `listarPorUsuario`, `consultar` | `editar` | `excluir` |
 
 ## Regras de negócio
@@ -200,3 +206,4 @@ Todas as operações de CRUD fazem sentido no domínio e estão previstas no mod
 | 8 | **Excluir Jogo:** as reviews do jogo são excluídas em cascata. | Banco (`ON DELETE CASCADE`) |
 | 9 | **Excluir Usuario:** as reviews do usuário são excluídas em cascata e a `nota_media` dos jogos afetados é recalculada. | Banco (cascata) e aplicação (recálculo) |
 | 10 | **Gênero obrigatório:** todo jogo deve ter um gênero válido. | Banco (`id_genero NOT NULL` + FK) |
+| 11 | **Excluir Plataforma:** bloqueado se houver jogos ligados a ela (remova a plataforma desses jogos antes). | Aplicação (exclusão condicionada na própria consulta) |

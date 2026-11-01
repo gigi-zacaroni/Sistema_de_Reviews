@@ -85,3 +85,20 @@ export function lerPaginacao(query) {
   const deslocamento = Math.max(Number(query.deslocamento) || 0, 0);
   return { limite, deslocamento };
 }
+
+// Lista de ids (ex.: plataformas de um jogo). Remove repetidos e limita o tamanho.
+export function validarListaIds(valor, campo, max = 50) {
+  if (!Array.isArray(valor)) {
+    throw new ErroHttp(400, `${campo} deve ser uma lista de ids`);
+  }
+  if (valor.length > max) {
+    throw new ErroHttp(400, `${campo} aceita no máximo ${max} itens`);
+  }
+  const ids = valor.map((v) => {
+    if (typeof v !== "number" && typeof v !== "string") {
+      throw new ErroHttp(400, `${campo} deve conter apenas ids numéricos`);
+    }
+    return validarId(v, campo);
+  });
+  return [...new Set(ids)];
+}

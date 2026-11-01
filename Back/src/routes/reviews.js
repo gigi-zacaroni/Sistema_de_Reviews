@@ -84,6 +84,16 @@ router.get("/denuncias", autenticar, exigirPerfil("ADMIN"), async (req, res) => 
   res.json(linhas);
 });
 
+// DELETE /reviews/denuncias/:id: o Administrador descarta uma denúncia que
+// analisou e considerou improcedente (a review continua no ar). Para remover a
+// review denunciada, use DELETE /reviews/:id, que apaga também as denúncias dela.
+router.delete("/denuncias/:id", autenticar, exigirPerfil("ADMIN"), async (req, res) => {
+  const id = validarId(req.params.id);
+  const [resultado] = await pool.query("DELETE FROM review_denuncia WHERE id_denuncia = ?", [id]);
+  if (resultado.affectedRows === 0) throw new ErroHttp(404, "Denúncia não encontrada");
+  res.status(204).end();
+});
+
 router.get("/:id", async (req, res) => {
   res.json(await buscarReview(validarId(req.params.id)));
 });

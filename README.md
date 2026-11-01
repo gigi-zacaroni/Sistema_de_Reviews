@@ -24,7 +24,8 @@ O projeto roda inteiro em Docker: um comando sobe a API e o banco.
 | Modelagem (diagramas de classes e ER) | Concluída |
 | Banco de dados (`Banco/schema.sql`) | Concluído |
 | Execução em Docker | Concluída |
-| Integração com a RAWG (busca e importação) | Funcionando |
+| Integração com a RAWG (busca e importação de jogos pela API) | Funcionando ([Sprint-5](Sprints/Sprint-5.md)) |
+| CRUD de plataformas e moderação de denúncias | Concluídos ([Sprint-5](Sprints/Sprint-5.md)) |
 | CRUDs de usuário, gênero, jogo e review | Concluídos |
 | Autenticação com JWT e controle de acesso por perfil | Concluída ([Sprint-3](Sprints/Sprint-3.md)) |
 | Recuperação de senha por e-mail | Concluída ([Sprint-3](Sprints/Sprint-3.md)) |
@@ -43,7 +44,7 @@ O projeto roda inteiro em Docker: um comando sobe a API e o banco.
 |---|---|---|---|
 | `usuario` | Pessoas cadastradas (nome, e-mail, hash da senha, perfil) | `email` único; `perfil` é `COMUM` (padrão) ou `ADMIN` | 1 (e-mail único), 2 (senha só em hash), 9 (exclusão apaga as reviews do usuário) |
 | `genero` | Categorias dos jogos | `nome` único | 7 (não pode ser excluído se tiver jogos) |
-| `plataforma` | Plataformas em que os jogos existem | `nome` único | — |
+| `plataforma` | Plataformas em que os jogos existem | `nome` único | 11 (não pode ser excluída se tiver jogos) |
 | `jogo` | Jogos avaliados, com `nota_media` e `rawg_id` da RAWG | `id_genero` obrigatório; `rawg_id` único; `nota_media` entre 0,0 e 10,0 | 6 (nota média recalculada), 8 (exclusão apaga as reviews do jogo), 10 (gênero obrigatório) |
 | `jogo_plataforma` | Liga jogos e plataformas (N:N) | Chave primária composta `(id_jogo, id_plataforma)` | — |
 | `review` | Avaliação de um usuário sobre um jogo | Uma review por `(id_usuario, id_jogo)`; `nota` entre 0,0 e 10,0; `atualizado_em` muda sozinho ao editar | 3 (só o autor edita ou exclui), 4 (uma review por usuário por jogo), 5 (nota válida), 6 (recálculo da nota média) |
@@ -53,6 +54,7 @@ O projeto roda inteiro em Docker: um comando sobe a API e o banco.
 **Regras de integridade nas exclusões** (ver regras de negócio 7, 8 e 9)
 
 - Excluir um gênero que tem jogos é bloqueado (`RESTRICT`).
+- Excluir uma plataforma que tem jogos ligados a ela é bloqueado pela API (regra 11).
 - Excluir um jogo ou um usuário apaga em cascata as reviews dele (`CASCADE`).
 - Excluir uma review apaga suas curtidas e denúncias, e excluir um jogo apaga suas ligações com plataformas.
 
@@ -65,6 +67,7 @@ O projeto roda inteiro em Docker: um comando sobe a API e o banco.
 | Semana 2 | modelagem concluída , persistência e base da aplicação executável com Docker | ***como executar e testar o código***: [Sprint-2](Sprints/Sprint-2.md) |[Commit](https://github.com/gigi-zacaroni/Sistema_de_Reviews/commit/1e045e90b33d43e380b3316c1bc1281aa368d53e)|
 | Semana 3 | autenticação com JWT (Usuário Comum e Administrador), controle de acesso, CRUDs e recuperação de senha por e-mail | ***como executar e testar o código***: [Sprint-3](Sprints/Sprint-3.md) | [Commit](https://github.com/gigi-zacaroni/Sistema_de_Reviews/commit/a06948157ba0def69ca62da2857d413574da23ed) |
 | Semana 4 | CRUD das entidades centrais e regras de negócio em funcionamento | A entrega da semana 4 foi feita , de forma adiantada , na semana 3. Logo, os links são os mesmos da semana anterior | - |
+| Semana 5 | conclusão das operações de CRUD aplicáveis ao escopo e integração funcional com a API externa (RAWG) | ***como executar e testar o código***: [Sprint-5](https://github.com/gigi-zacaroni/Sistema_de_Reviews/Sprints/Sprint-5.md) | - |
 
 ### Endpoints
 
@@ -88,10 +91,15 @@ Permissões: **Pública** (sem login), **Logado** (qualquer usuário autenticado
 | Gêneros | POST | `/generos` | Cadastra gênero | Admin | `nome`, `descricao` | `201`; `409` nome repetido |
 | Gêneros | PUT | `/generos/:id` | Atualiza gênero | Admin | `nome`, `descricao` | `200` |
 | Gêneros | DELETE | `/generos/:id` | Exclui gênero (regra 7) | Admin | — | `204`; `409` se houver jogos |
+| Plataformas | GET | `/plataformas`, `/plataformas/:id` | Lista / consulta plataformas, com `qtd_jogos` | Pública | — | `200`; `404` |
+| Plataformas | POST | `/plataformas` | Cadastra plataforma | Admin | `nome` | `201`; `409` nome repetido |
+| Plataformas | PUT | `/plataformas/:id` | Renomeia plataforma | Admin | `nome` | `200`; `409` nome repetido |
+| Plataformas | DELETE | `/plataformas/:id` | Exclui plataforma (regra 11) | Admin | — | `204`; `409` se houver jogos ligados |
 | Jogos | GET | `/jogos` | Lista jogos com filtros | Pública | Query `busca`, `id_genero`, `id_plataforma`, `limite`, `deslocamento` | `200` lista com `nota_media` e `qtd_reviews` |
 | Jogos | GET | `/jogos/:id` | Detalha um jogo, com plataformas | Pública | — | `200`; `404` |
-| Jogos | POST | `/jogos` | Cadastra jogo | Admin | `id_genero`, `titulo` + opcionais | `201`; `400` gênero inexistente |
-| Jogos | PUT | `/jogos/:id` | Atualiza jogo | Admin | campos do jogo | `200` |
+| Jogos | POST | `/jogos` | Cadastra jogo | Admin | `id_genero`, `titulo` + opcionais, inclusive `plataformas` (lista de `id_plataforma`) | `201`; `400` gênero ou plataforma inexistente |
+| Jogos | POST | `/jogos/importar` | Importa um jogo da RAWG (jogo, gênero e plataformas). O `rawg_id` vem de `GET /rawg/jogos` | Admin | `rawg_id` | `201` jogo gravado; `409` já importado; `404` não existe na RAWG; `502` RAWG com falha; `503` chave da RAWG não configurada |
+| Jogos | PUT | `/jogos/:id` | Atualiza jogo. Se `plataformas` for enviada, substitui as plataformas do jogo (lista vazia remove todas) | Admin | campos do jogo e/ou `plataformas` | `200`; `400` plataforma inexistente |
 | Jogos | DELETE | `/jogos/:id` | Exclui jogo e suas reviews (regra 8) | Admin | — | `204` |
 | Reviews | GET | `/reviews`, `/reviews/:id` | Lista (filtros `id_jogo`, `id_usuario`) / consulta reviews, com `qtd_curtidas` | Pública | — | `200` |
 | Reviews | POST | `/reviews` | Publica review (autor = dono do token; regras 4, 5 e 6) | Logado | `id_jogo`, `titulo`, `comentario`, `nota` | `201`; `409` já avaliou o jogo |
@@ -100,5 +108,6 @@ Permissões: **Pública** (sem login), **Logado** (qualquer usuário autenticado
 | Reviews | POST | `/reviews/:id/curtida` | Marca a review como útil | Logado | — | `201` com `qtd_curtidas`; `409` se já curtiu |
 | Reviews | DELETE | `/reviews/:id/curtida` | Remove a própria curtida | Logado | — | `204`; `404` se não curtiu |
 | Reviews | POST | `/reviews/:id/denuncia` | Denuncia uma review inadequada | Logado | `motivo` | `201`; `409` se já denunciou |
+| Reviews | DELETE | `/reviews/denuncias/:id` | Descarta uma denúncia analisada (a review continua no ar; para remover a review use `DELETE /reviews/:id`) | Admin | — | `204`; `404` |
 | Reviews | GET | `/reviews/denuncias` | Lista as denúncias, para moderação | Admin | Query `limite`, `deslocamento` | `200` lista com `motivo`, `denunciante`, `titulo_review` |
-| RAWG | GET | `/rawg/jogos` | Busca até 10 jogos na RAWG pelo nome | Pública | Query `busca` (obrigatória) | `200` lista com `rawg_id`, `titulo`, `data_lancamento`, `capa_url`; `400` sem `busca`; `502` se a RAWG falhar |
+| RAWG | GET | `/rawg/jogos` | Busca até 10 jogos na RAWG pelo nome (primeiro passo para importar um jogo) | Admin | Query `busca` (obrigatória) | `200` lista com `rawg_id`, `titulo`, `data_lancamento`, `capa_url`, `ja_importado`; `400` sem `busca`; `502` se a RAWG falhar |

@@ -9,6 +9,8 @@ import usuariosRoutes from "./src/routes/usuarios.js";
 import generosRoutes from "./src/routes/generos.js";
 import jogosRoutes from "./src/routes/jogos.js";
 import reviewsRoutes from "./src/routes/reviews.js";
+import plataformasRoutes from "./src/routes/plataformas.js";
+import rawgRoutes from "./src/routes/rawg.js";
 
 const app = express();
 app.disable("x-powered-by");
@@ -31,44 +33,12 @@ app.use("/auth", authRoutes);
 // Recursos do sistema (cada rota define quem pode acessar)
 app.use("/usuarios", usuariosRoutes);
 app.use("/generos", generosRoutes);
+app.use("/plataformas", plataformasRoutes);
 app.use("/jogos", jogosRoutes);
 app.use("/reviews", reviewsRoutes);
 
-// Busca jogos na RAWG pelo nome: /rawg/jogos?busca=zelda
-app.get("/rawg/jogos", async (req, res) => {
-  const busca = req.query.busca;
-  if (!busca) {
-    return res.status(400).json({ erro: "Informe ?busca=nome do jogo" });
-  }
-
-  try {
-    const parametros = new URLSearchParams({
-      key: process.env.RAWG_API_KEY,
-      search: busca,
-      page_size: "10",
-    });
-
-    const resposta = await fetch(`https://api.rawg.io/api/games?${parametros}`);
-    if (!resposta.ok) {
-      throw new Error(`RAWG respondeu ${resposta.status}`);
-    }
-
-    const dados = await resposta.json();
-
-    // Devolve só o que o banco usa (colunas da tabela jogo)
-    res.json(
-      dados.results.map((j) => ({
-        rawg_id: j.id,
-        titulo: j.name,
-        data_lancamento: j.released,
-        capa_url: j.background_image,
-      }))
-    );
-  } catch (erro) {
-    console.error(erro.message);
-    res.status(502).json({ erro: "Falha ao consultar a RAWG" });
-  }
-});
+// Integração com a RAWG (busca de jogos; a importação fica em POST /jogos/importar)
+app.use("/rawg", rawgRoutes);
 
 // Estes dois precisam ser os últimos
 app.use(rotaNaoEncontrada);

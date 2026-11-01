@@ -54,7 +54,7 @@ Depois da importação, abra `http://localhost:3000/generos` e os gêneros devem
 
 ### 3. Testar a busca na RAWG
 
-`http://localhost:3000/rawg/jogos?busca=zelda` devolve até 10 jogos encontrados.
+`GET http://localhost:3000/rawg/jogos?busca=zelda` devolve até 10 jogos encontrados. Desde a [Sprint-5](Sprint-5.md) essa rota exige o token do administrador, então teste pelo Postman (o navegador responderia **401**).
 
 ### 4. Consultar o banco diretamente
 
