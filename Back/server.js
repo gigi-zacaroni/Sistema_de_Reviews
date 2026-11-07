@@ -1,16 +1,16 @@
 import "dotenv/config";
 import express from "express";
-import { pool } from "./src/db.js";
-import { config } from "./src/config.js";
-import { criarAdminInicial } from "./src/seedAdmin.js";
-import { rotaNaoEncontrada, tratarErros } from "./src/middlewares/erros.js";
-import authRoutes from "./src/routes/auth.js";
-import usuariosRoutes from "./src/routes/usuarios.js";
-import generosRoutes from "./src/routes/generos.js";
-import jogosRoutes from "./src/routes/jogos.js";
-import reviewsRoutes from "./src/routes/reviews.js";
-import plataformasRoutes from "./src/routes/plataformas.js";
-import rawgRoutes from "./src/routes/rawg.js";
+import { verificarBanco } from "./Src/Database/db.js";
+import { config } from "./Src/Configs/config.js";
+import { criarAdminInicial } from "./Src/Database/seedAdmin.js";
+import { rotaNaoEncontrada, tratarErros } from "./Src/Apps/middlewares/erros.js";
+import authRoutes from "./Src/Routs/authRouts.js";
+import usuariosRoutes from "./Src/Routs/usuariosRouts.js";
+import generosRoutes from "./Src/Routs/generosRouts.js";
+import jogosRoutes from "./Src/Routs/jogosRouts.js";
+import reviewsRoutes from "./Src/Routs/reviewsRouts.js";
+import plataformasRoutes from "./Src/Routs/plataformasRouts.js";
+import rawgRoutes from "./Src/Routs/rawgRouts.js";
 
 const app = express();
 app.disable("x-powered-by");
@@ -19,7 +19,7 @@ app.use(express.json());
 // Verifica se a API está no ar e se consegue falar com o banco
 app.get("/health", async (req, res) => {
   try {
-    await pool.query("SELECT 1");
+    await verificarBanco();
     res.json({ api: "ok", banco: "ok" });
   } catch (erro) {
     console.error("Falha ao consultar o banco:", erro.message);

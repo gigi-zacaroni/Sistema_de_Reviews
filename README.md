@@ -29,14 +29,14 @@ O projeto roda inteiro em Docker: um comando sobe a API e o banco.
 | CRUDs de usuário, gênero, jogo e review | Concluídos |
 | Autenticação com JWT e controle de acesso por perfil | Concluída ([Sprint-3](Sprints/Sprint-3.md)) |
 | Recuperação de senha por e-mail | Concluída ([Sprint-3](Sprints/Sprint-3.md)) |
-| Coleção do Postman | Planejado |
+| Coleção do Postman | Concluída |
 
 ## Diagrama EER 
 
 ### Imagem do diagrama :
-[Diagrama_EER](Banco/DER.png)
+![Diagrama_ER](Back\Src\Schema\DER.png)
 
-### Regras de negócio detalhadas: [Regras_de_negócio](Sprints/Sprint-1.md)
+### Regras de negócio detalhadas: [Regras_de_negócio](Sprints/Sprint-1.md?plain=1#L123)
 
 ### Resumo do schema.sql
 
@@ -68,6 +68,132 @@ O projeto roda inteiro em Docker: um comando sobe a API e o banco.
 | Semana 3 | autenticação com JWT (Usuário Comum e Administrador), controle de acesso, CRUDs e recuperação de senha por e-mail | ***como executar e testar o código***: [Sprint-3](Sprints/Sprint-3.md) | [Commit](https://github.com/gigi-zacaroni/Sistema_de_Reviews/commit/a06948157ba0def69ca62da2857d413574da23ed) |
 | Semana 4 | CRUD das entidades centrais e regras de negócio em funcionamento | A entrega da semana 4 foi feita , de forma adiantada , na semana 3. Logo, os links são os mesmos da semana anterior | - |
 | Semana 5 | conclusão das operações de CRUD aplicáveis ao escopo e integração funcional com a API externa (RAWG) | ***como executar e testar o código***: [Sprint-5](https://github.com/gigi-zacaroni/Sistema_de_Reviews/blob/main/Sprints/Sprint-5.md) | [Commit](https://github.com/gigi-zacaroni/Sistema_de_Reviews/commit/34a585182074516cbeda0a3d32d06e364543ba8f) |
+| Semana 6 | revisão da solução, incluindo segurança, permissões,
+arquitetura e tratamento de erros; correção de falhas + **entrega final** | Sprint_6.md | [Commit]() |
+
+# Guia de execução — Sistema de Reviews
+
+API em Node.js (Express 5) + MySQL 8, com e-mail de teste (Mailpit). Tudo roda em Docker com um único comando.
+
+## 1. Pré-requisitos
+
+| Ferramenta | Para quê |
+|---|---|
+| Docker Desktop (com Docker Compose) | Subir API, MySQL e Mailpit |
+| Postman | Testar os endpoints |
+| Chave da RAWG (opcional) | Buscar e importar jogos (veja a seção 3) |
+
+## 2. Banco de dados (já configurado)
+
+O `docker-compose.yml` cria as tabelas na primeira subida a partir do script `Back/Src/Schema/schema.sql`, por este volume do serviço `db`:
+
+```yaml
+      - ./Back/Src/Schema:/docker-entrypoint-initdb.d:ro
+```
+
+Confira que essa linha está assim. O script só roda quando o banco é criado pela primeira vez; para recriar do zero, veja "Recomeçar do zero" na seção 5.
+
+## 3. Como conseguir a API key da RAWG
+
+A chave é gratuita e só é necessária para os endpoints que usam a RAWG (`GET /rawg/jogos` e `POST /jogos/importar`). O resto da API funciona sem ela.
+
+1. Acesse https://rawg.io/apidocs.
+2. Clique em **Get API Key**.
+3. Crie uma conta (e-mail e senha) ou entre com uma já existente e confirme o e-mail, se pedido.
+4. Preencha o formulário de solicitação da chave: nome/descrição do projeto (por exemplo, "Sistema de Reviews de jogos, projeto acadêmico") e, se solicitado, a URL do projeto.
+5. Copie a chave exibida na página (ela também fica disponível na área da sua conta, em https://rawg.io/apidocs).
+6. Cole a chave em `Back/.env`:
+
+   ```
+   RAWG_API_KEY=sua_chave_aqui
+   ```
+
+7. Reinicie a API para ler o novo valor: `docker compose up --build`.
+
+Observações:
+- Não publique a chave no GitHub. O `.env` já está no `.gitignore` e no `.dockerignore`; envie ao repositório apenas o `.env.example`, com o valor de exemplo.
+- O plano gratuito tem limite de requisições por mês e exige citar a RAWG como fonte dos dados; confira as condições atuais na própria página da RAWG.
+- Se a API responder `503` ("Integração com a RAWG indisponível"), a chave está ausente ou ainda com o valor de exemplo.
+
+## 4. Configurar o `.env`
+
+Na pasta `Back`, copie o exemplo:
+
+```bash
+cd Back
+cp .env.example .env        # Windows (PowerShell): copy .env.example .env
+```
+
+Edite `Back/.env`:
+
+- `RAWG_API_KEY`: sua chave ( para obter uma chave acesse "https://rawg.io/apidocs" ).
+- `JWT_SECRET`: troque por um texto longo e aleatório.
+- `ADMIN_EMAIL` / `ADMIN_SENHA`: administrador criado automaticamente na primeira subida (padrão `admin@reviews.com` / `Admin@12345`).
+
+O restante (banco e e-mail) já é definido pelo `docker-compose.yml`.
+
+## 5. Subir o projeto
+
+Na raiz do projeto (onde está o `docker-compose.yml`):
+
+```bash
+docker compose up --build
+```
+
+| Serviço | Endereço |
+|---|---|
+| API | http://localhost:3000 |
+| MySQL | `localhost:3308` (usuário `reviews_user`, senha `reviews_pass`, banco `sistema_reviews`) |
+| Mailpit (caixa de e-mails de teste) | http://localhost:8025 |
+
+Aguarde a mensagem `API rodando na porta 3000`. Para rodar em segundo plano use `docker compose up -d --build`, e para parar, `docker compose down`.
+
+**Recomeçar do zero** (apaga o banco, recria as tabelas e o administrador):
+
+```bash
+docker compose down -v
+docker compose up --build
+```
+
+## 6. Verificar se funcionou
+
+Abra http://localhost:3000/health. Resposta esperada:
+
+```json
+{ "api": "ok", "banco": "ok" }
+```
+
+`503` com `"banco": "indisponivel"` indica que o MySQL ainda está iniciando (espere alguns segundos) ou que as tabelas não foram criadas (revise a seção 2 e recomece do zero).
+
+## 7. Testar os endpoints no Postman
+
+1. No Postman: **Import → File** e escolha `postman_collection.json`.
+2. Confira as variáveis da coleção: `baseUrl` = `http://localhost:3000`, `adminEmail` e `adminSenha` (os mesmos do `.env`).
+3. Rode as pastas em ordem pelo **Collection Runner**: Health → Auth → Gêneros → Plataformas → Jogos → Reviews → RAWG → Usuários → Limpeza. Tokens e ids ficam salvos nas variáveis automaticamente.
+4. **Recuperação de senha:** rode "Esqueci minha senha", abra http://localhost:8025, copie o `token` do link do e-mail e cole nos requests "Redefinir senha".
+
+Exemplo manual (login do admin):
+
+```bash
+curl -X POST http://localhost:3000/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@reviews.com","senha":"Admin@12345"}'
+```
+
+Use o `token` retornado no cabeçalho `Authorization: Bearer <token>` das rotas protegidas.
+
+## 8. Importar jogos da RAWG
+
+Pela API (como admin):
+
+1. `GET /rawg/jogos?busca=zelda` para achar o `rawg_id` do jogo.
+2. `POST /jogos/importar` com `{ "rawg_id": 3498 }`.
+
+Por linha de comando (carga inicial, com a API no ar e a chave configurada), informando o gênero e a quantidade (padrão `action` e `10`):
+
+```bash
+docker compose exec api npm run importar -- action 10
+```
 
 ### Endpoints
 

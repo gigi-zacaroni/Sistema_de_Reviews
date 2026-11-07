@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "importar": "node Src/Database/importar_rawg.js",
+    "test": "node --test"
   },
   "repository": {
     "type": "git",
