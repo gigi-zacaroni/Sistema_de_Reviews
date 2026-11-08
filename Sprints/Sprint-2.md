@@ -45,7 +45,7 @@ Abra no navegador `http://localhost:3000/health`. O resultado esperado é:
 Para carregar dados, com os contêineres rodando, abra **outro terminal** na pasta do projeto e rode:
 
 ```bash
-docker compose exec api node src/importar_rawg.js action 5
+docker compose exec api npm run importar -- action 5
 ```
 
 O comando importa 5 jogos do gênero `action`, com seus gêneros e plataformas. Os dois argumentos são opcionais: o primeiro é o gênero (padrão `action`) e o segundo é a quantidade (padrão `10`). Exige `RAWG_API_KEY` preenchida em `Back/.env`.

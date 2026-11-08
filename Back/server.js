@@ -2,6 +2,7 @@ import "dotenv/config";
 import express from "express";
 import { verificarBanco } from "./Src/Database/db.js";
 import { config } from "./Src/Configs/config.js";
+import { migrarBanco } from "./Src/Database/migrar.js";
 import { criarAdminInicial } from "./Src/Database/seedAdmin.js";
 import { rotaNaoEncontrada, tratarErros } from "./Src/Apps/middlewares/erros.js";
 import authRoutes from "./Src/Routs/authRouts.js";
@@ -43,6 +44,15 @@ app.use("/rawg", rawgRoutes);
 // Estes dois precisam ser os últimos
 app.use(rotaNaoEncontrada);
 app.use(tratarErros);
+
+// Atualiza o schema do banco (migrações pendentes) ANTES de aceitar requisições.
+// Se falhar, a API não sobe: melhor parar do que rodar com tabelas faltando.
+try {
+  await migrarBanco();
+} catch (erro) {
+  console.error("Não foi possível atualizar o banco (migrações):", erro.message);
+  process.exit(1);
+}
 
 // Cria o administrador inicial (se ainda não existir) antes de aceitar requisições
 try {

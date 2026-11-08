@@ -1,0 +1,157 @@
+-- Migração 001: estrutura inicial do banco.
+-- Todas as tabelas usam IF NOT EXISTS: num banco que já tinha parte delas, só as
+-- que faltam são criadas (foi assim que a recuperacao_senha ausente seria corrigida).
+-- Regra: nunca edite uma migração já aplicada; mudanças novas vão em outro arquivo.
+
+-- USUARIO
+-- Regra 1: e-mail único | Regra 2: somente o hash da senha é armazenado--
+CREATE TABLE IF NOT EXISTS usuario (
+  id_usuario  INT UNSIGNED  NOT NULL AUTO_INCREMENT,
+  nome        VARCHAR(100)  NOT NULL,
+  email       VARCHAR(150)  NOT NULL,
+  senha_hash  VARCHAR(255)  NOT NULL,
+  perfil      ENUM('COMUM','ADMIN') NOT NULL DEFAULT 'COMUM',
+  criado_em   DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id_usuario),
+  UNIQUE KEY uq_usuario_email (email)
+) ENGINE=InnoDB;
+
+-- RECUPERACAO_SENHA (recuperação de senha por e-mail)
+-- Guarda só o hash (SHA-256) do token enviado por e-mail, nunca o token em si.
+-- O token vale por poucos minutos (expira_em) e é apagado depois de usado.
+CREATE TABLE IF NOT EXISTS recuperacao_senha (
+  id_recuperacao  INT UNSIGNED  NOT NULL AUTO_INCREMENT,
+  id_usuario      INT UNSIGNED  NOT NULL,
+  token_hash      CHAR(64)      NOT NULL,
+  expira_em       DATETIME      NOT NULL,
+  criado_em       DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id_recuperacao),
+  UNIQUE KEY uq_recuperacao_token (token_hash),
+  KEY idx_recuperacao_usuario (id_usuario),
+  CONSTRAINT fk_recuperacao_usuario
+    FOREIGN KEY (id_usuario) REFERENCES usuario (id_usuario)
+    ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB;
+
+-- GENERO
+CREATE TABLE IF NOT EXISTS genero (
+  id_genero  INT UNSIGNED  NOT NULL AUTO_INCREMENT,
+  nome       VARCHAR(60)   NOT NULL,
+  descricao  VARCHAR(255)  NULL,
+  PRIMARY KEY (id_genero),
+  UNIQUE KEY uq_genero_nome (nome)
+) ENGINE=InnoDB;
+
+
+-- PLATAFORMA (usada nos filtros de busca do escopo)
+CREATE TABLE IF NOT EXISTS plataforma (
+  id_plataforma  INT UNSIGNED  NOT NULL AUTO_INCREMENT,
+  nome           VARCHAR(60)   NOT NULL,
+  PRIMARY KEY (id_plataforma),
+  UNIQUE KEY uq_plataforma_nome (nome)
+) ENGINE=InnoDB;
+
+
+-- JOGO
+-- Regra 10: id_genero obrigatório (NOT NULL)
+-- Regra 7: não é possível excluir um gênero que tenha jogos (RESTRICT)
+-- nota_media é recalculada pela aplicação (regra 6)
+-- rawg_id e capa_url guardam os dados vindos da API RAWG
+CREATE TABLE IF NOT EXISTS jogo (
+  id_jogo          INT UNSIGNED   NOT NULL AUTO_INCREMENT,
+  id_genero        INT UNSIGNED   NOT NULL,
+  titulo           VARCHAR(150)   NOT NULL,
+  desenvolvedora   VARCHAR(100)   NULL,
+  publicadora      VARCHAR(100)   NULL,
+  descricao        TEXT           NULL,
+  data_lancamento  DATE           NULL,
+  nota_media       DECIMAL(3,1)   NOT NULL DEFAULT 0.0,
+  capa_url         VARCHAR(500)   NULL,
+  rawg_id          INT UNSIGNED   NULL,
+  PRIMARY KEY (id_jogo),
+  UNIQUE KEY uq_jogo_rawg (rawg_id),
+  KEY idx_jogo_titulo (titulo),
+  KEY idx_jogo_genero (id_genero),
+  CONSTRAINT fk_jogo_genero
+    FOREIGN KEY (id_genero) REFERENCES genero (id_genero)
+    ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT ck_jogo_nota_media CHECK (nota_media BETWEEN 0.0 AND 10.0)
+) ENGINE=InnoDB;
+
+
+-- JOGO_PLATAFORMA (relação N:N entre jogo e plataforma)
+CREATE TABLE IF NOT EXISTS jogo_plataforma (
+  id_jogo        INT UNSIGNED NOT NULL,
+  id_plataforma  INT UNSIGNED NOT NULL,
+  PRIMARY KEY (id_jogo, id_plataforma),
+  KEY idx_jp_plataforma (id_plataforma),
+  CONSTRAINT fk_jp_jogo
+    FOREIGN KEY (id_jogo) REFERENCES jogo (id_jogo)
+    ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT fk_jp_plataforma
+    FOREIGN KEY (id_plataforma) REFERENCES plataforma (id_plataforma)
+    ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB;
+
+
+-- REVIEW
+-- Regra 3: autoria (verificada pela aplicação) | atualizado_em muda ao editar
+-- Regra 4: uma review por usuário por jogo (UNIQUE)
+-- Regra 5: nota entre 0,0 e 10,0 (CHECK)
+-- Regras 8 e 9: exclusão em cascata ao apagar o jogo ou o usuário
+CREATE TABLE IF NOT EXISTS review (
+  id_review      INT UNSIGNED   NOT NULL AUTO_INCREMENT,
+  id_usuario     INT UNSIGNED   NOT NULL,
+  id_jogo        INT UNSIGNED   NOT NULL,
+  titulo         VARCHAR(120)   NOT NULL,
+  comentario     TEXT           NULL,
+  nota           DECIMAL(3,1)   NOT NULL,
+  criado_em      DATETIME       NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  atualizado_em  DATETIME       NOT NULL DEFAULT CURRENT_TIMESTAMP
+                                ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id_review),
+  UNIQUE KEY uq_review_usuario_jogo (id_usuario, id_jogo),
+  KEY idx_review_jogo (id_jogo),
+  CONSTRAINT fk_review_usuario
+    FOREIGN KEY (id_usuario) REFERENCES usuario (id_usuario)
+    ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT fk_review_jogo
+    FOREIGN KEY (id_jogo) REFERENCES jogo (id_jogo)
+    ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT ck_review_nota CHECK (nota BETWEEN 0.0 AND 10.0)
+) ENGINE=InnoDB;
+
+
+-- REVIEW_CURTIDA (marcar review como útil; um usuário curte uma vez)
+CREATE TABLE IF NOT EXISTS review_curtida (
+  id_review   INT UNSIGNED NOT NULL,
+  id_usuario  INT UNSIGNED NOT NULL,
+  criado_em   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id_review, id_usuario),
+  KEY idx_curtida_usuario (id_usuario),
+  CONSTRAINT fk_curtida_review
+    FOREIGN KEY (id_review) REFERENCES review (id_review)
+    ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT fk_curtida_usuario
+    FOREIGN KEY (id_usuario) REFERENCES usuario (id_usuario)
+    ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB;
+
+
+-- REVIEW_DENUNCIA (denunciar review inadequada; uma denúncia por usuário)
+CREATE TABLE IF NOT EXISTS review_denuncia (
+  id_denuncia  INT UNSIGNED  NOT NULL AUTO_INCREMENT,
+  id_review    INT UNSIGNED  NOT NULL,
+  id_usuario   INT UNSIGNED  NOT NULL,
+  motivo       VARCHAR(255)  NOT NULL,
+  criado_em    DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id_denuncia),
+  UNIQUE KEY uq_denuncia_review_usuario (id_review, id_usuario),
+  KEY idx_denuncia_usuario (id_usuario),
+  CONSTRAINT fk_denuncia_review
+    FOREIGN KEY (id_review) REFERENCES review (id_review)
+    ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT fk_denuncia_usuario
+    FOREIGN KEY (id_usuario) REFERENCES usuario (id_usuario)
+    ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB;

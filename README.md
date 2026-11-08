@@ -4,6 +4,15 @@ API em **Node.js (Express)** com banco **MySQL** para avaliação de jogos eletr
 
 O projeto roda inteiro em Docker: um comando sobe a API e o banco.
 
+## Sumário
+
+- Tecnologias
+- Diagrama EER
+- Resumo do schema.sql
+- Entregas ( Semana | requisitos | link | Commit )
+- Guia de execução
+- Endpoints
+
 ## Tecnologias
 
 | Categoria | Tecnologia | Uso no projeto |
@@ -17,24 +26,12 @@ O projeto roda inteiro em Docker: um comando sobe a API e o banco.
 | E-mail | Nodemailer + Mailpit (Docker) | Recuperação de senha por e-mail |
 | Testes de API (planejado) | Postman | Coleção com todos os endpoints |
 
-## Estado atual do projeto
 
-| Item | Situação |
-|---|---|
-| Modelagem (diagramas de classes e ER) | Concluída |
-| Banco de dados (`Banco/schema.sql`) | Concluído |
-| Execução em Docker | Concluída |
-| Integração com a RAWG (busca e importação de jogos pela API) | Funcionando ([Sprint-5](Sprints/Sprint-5.md)) |
-| CRUD de plataformas e moderação de denúncias | Concluídos ([Sprint-5](Sprints/Sprint-5.md)) |
-| CRUDs de usuário, gênero, jogo e review | Concluídos |
-| Autenticação com JWT e controle de acesso por perfil | Concluída ([Sprint-3](Sprints/Sprint-3.md)) |
-| Recuperação de senha por e-mail | Concluída ([Sprint-3](Sprints/Sprint-3.md)) |
-| Coleção do Postman | Concluída |
 
 ## Diagrama EER 
 
 ### Imagem do diagrama :
-![Diagrama_ER](Back\Src\Schema\DER.png)
+![Diagrama_ER](https://github.com/gigi-zacaroni/Sistema_de_Reviews/blob/main/Banco/DER.png)
 
 ### Regras de negócio detalhadas: [Regras_de_negócio](Sprints/Sprint-1.md?plain=1#L123)
 
@@ -68,8 +65,7 @@ O projeto roda inteiro em Docker: um comando sobe a API e o banco.
 | Semana 3 | autenticação com JWT (Usuário Comum e Administrador), controle de acesso, CRUDs e recuperação de senha por e-mail | ***como executar e testar o código***: [Sprint-3](Sprints/Sprint-3.md) | [Commit](https://github.com/gigi-zacaroni/Sistema_de_Reviews/commit/a06948157ba0def69ca62da2857d413574da23ed) |
 | Semana 4 | CRUD das entidades centrais e regras de negócio em funcionamento | A entrega da semana 4 foi feita , de forma adiantada , na semana 3. Logo, os links são os mesmos da semana anterior | - |
 | Semana 5 | conclusão das operações de CRUD aplicáveis ao escopo e integração funcional com a API externa (RAWG) | ***como executar e testar o código***: [Sprint-5](https://github.com/gigi-zacaroni/Sistema_de_Reviews/blob/main/Sprints/Sprint-5.md) | [Commit](https://github.com/gigi-zacaroni/Sistema_de_Reviews/commit/34a585182074516cbeda0a3d32d06e364543ba8f) |
-| Semana 6 | revisão da solução, incluindo segurança, permissões,
-arquitetura e tratamento de erros; correção de falhas + **entrega final** | Sprint_6.md | [Commit]() |
+| Semana 6 | revisão da solução, incluindo segurança, permissões, arquitetura e tratamento de erros; correção de falhas + **entrega final** | Sprint_6.md | [Commit](https://github.com/gigi-zacaroni/Sistema_de_Reviews/commit/c72c25ba82797015ef99bd4b2fdf9d6e6f882a41) |
 
 # Guia de execução — Sistema de Reviews
 
@@ -114,6 +110,10 @@ Observações:
 - Não publique a chave no GitHub. O `.env` já está no `.gitignore` e no `.dockerignore`; envie ao repositório apenas o `.env.example`, com o valor de exemplo.
 - O plano gratuito tem limite de requisições por mês e exige citar a RAWG como fonte dos dados; confira as condições atuais na própria página da RAWG.
 - Se a API responder `503` ("Integração com a RAWG indisponível"), a chave está ausente ou ainda com o valor de exemplo.
+
+### Sem chave ou com a RAWG fora do ar (modo falso)
+
+Defina `RAWG_MOCK=1` no `Back/.env` e reinicie a API. Os endpoints `GET /rawg/jogos` e `POST /jogos/importar` passam a usar 6 jogos de exemplo (GTA V, Witcher 3, Portal 2, Zelda BotW, RDR2 e Portal), sem internet e sem `RAWG_API_KEY`. Para simular falhas: buscar `erro502` ou `erro503` em `/rawg/jogos`, ou importar um `rawg_id` inexistente (ex.: `999999`) para receber `404`. Volte para `RAWG_MOCK=0` quando a RAWG voltar. Código em `Back/Src/Apps/gateways/rawgGatewayFake.js`.
 
 ## 4. Configurar o `.env`
 
@@ -182,6 +182,7 @@ curl -X POST http://localhost:3000/auth/login \
 
 Use o `token` retornado no cabeçalho `Authorization: Bearer <token>` das rotas protegidas.
 
+
 ## 8. Importar jogos da RAWG
 
 Pela API (como admin):
@@ -197,43 +198,79 @@ docker compose exec api npm run importar -- action 10
 
 ### Endpoints
 
-Permissões: **Pública** (sem login), **Logado** (qualquer usuário autenticado), **Dono** (só o autor/dono do recurso), **Dono ou Admin** e **Admin**. Rotas protegidas exigem o cabeçalho `Authorization: Bearer <token>`. Erros comuns: `400` dados inválidos, `401` sem login/token inválido, `403` sem permissão, `404` não encontrado, `409` conflito (duplicado ou regra de negócio).
+## Endpoints
 
-| Grupo | Método | Caminho | Descrição | Permissão | Requisição | Resposta |
-|---|---|---|---|---|---|---|
-| Sistema | GET | `/health` | Verifica se a API está no ar e se consegue consultar o banco | Pública | — | `200` `{"api":"ok","banco":"ok"}`; `503` se o banco estiver indisponível |
-| Auth | POST | `/auth/cadastro` | Cria conta (perfil sempre `COMUM`) | Pública | `nome`, `email`, `senha` (mín. 8) | `201` usuário criado; `409` e-mail já cadastrado |
-| Auth | POST | `/auth/login` | Faz login e devolve o token JWT | Pública | `email`, `senha` | `200` `token`, `tipo`, `expira_em`, `usuario`; `401` credenciais inválidas |
-| Auth | GET | `/auth/eu` | Mostra o usuário dono do token | Logado | — | `200` usuário |
-| Auth | POST | `/auth/esqueci-senha` | Envia por e-mail o link de recuperação (resposta igual exista o e-mail ou não) | Pública | `email` | `200` mensagem |
-| Auth | GET | `/auth/redefinir-senha?token=` | Página (aberta pelo link do e-mail) para digitar a nova senha | Pública | Query `token` | `200` HTML |
-| Auth | POST | `/auth/redefinir-senha` | Troca a senha com o token recebido por e-mail | Pública | `token`, `nova_senha` (mín. 8) | `200` mensagem; `400` token inválido ou expirado |
-| Usuários | GET | `/usuarios` | Lista usuários (nunca devolve `senha_hash`) | Admin | — | `200` lista |
-| Usuários | GET | `/usuarios/:id` | Consulta um usuário | Dono ou Admin | — | `200` usuário; `403`; `404` |
-| Usuários | PUT | `/usuarios/:id` | Edita `nome` e/ou `email` | Dono ou Admin | `nome`, `email` | `200` usuário; `409` e-mail em uso |
-| Usuários | PATCH | `/usuarios/:id/perfil` | Promove ou rebaixa | Admin | `perfil` (`COMUM`/`ADMIN`) | `200` usuário; `409` se for o único admin |
-| Usuários | DELETE | `/usuarios/:id` | Exclui a conta e as reviews dela (regra 9) | Dono ou Admin | — | `204`; `409` se for o único admin |
-| Gêneros | GET | `/generos`, `/generos/:id` | Lista / consulta gêneros | Pública | — | `200` |
-| Gêneros | POST | `/generos` | Cadastra gênero | Admin | `nome`, `descricao` | `201`; `409` nome repetido |
-| Gêneros | PUT | `/generos/:id` | Atualiza gênero | Admin | `nome`, `descricao` | `200` |
-| Gêneros | DELETE | `/generos/:id` | Exclui gênero (regra 7) | Admin | — | `204`; `409` se houver jogos |
-| Plataformas | GET | `/plataformas`, `/plataformas/:id` | Lista / consulta plataformas, com `qtd_jogos` | Pública | — | `200`; `404` |
-| Plataformas | POST | `/plataformas` | Cadastra plataforma | Admin | `nome` | `201`; `409` nome repetido |
-| Plataformas | PUT | `/plataformas/:id` | Renomeia plataforma | Admin | `nome` | `200`; `409` nome repetido |
-| Plataformas | DELETE | `/plataformas/:id` | Exclui plataforma (regra 11) | Admin | — | `204`; `409` se houver jogos ligados |
-| Jogos | GET | `/jogos` | Lista jogos com filtros | Pública | Query `busca`, `id_genero`, `id_plataforma`, `limite`, `deslocamento` | `200` lista com `nota_media` e `qtd_reviews` |
-| Jogos | GET | `/jogos/:id` | Detalha um jogo, com plataformas | Pública | — | `200`; `404` |
-| Jogos | POST | `/jogos` | Cadastra jogo | Admin | `id_genero`, `titulo` + opcionais, inclusive `plataformas` (lista de `id_plataforma`) | `201`; `400` gênero ou plataforma inexistente |
-| Jogos | POST | `/jogos/importar` | Importa um jogo da RAWG (jogo, gênero e plataformas). O `rawg_id` vem de `GET /rawg/jogos` | Admin | `rawg_id` | `201` jogo gravado; `409` já importado; `404` não existe na RAWG; `502` RAWG com falha; `503` chave da RAWG não configurada |
-| Jogos | PUT | `/jogos/:id` | Atualiza jogo. Se `plataformas` for enviada, substitui as plataformas do jogo (lista vazia remove todas) | Admin | campos do jogo e/ou `plataformas` | `200`; `400` plataforma inexistente |
-| Jogos | DELETE | `/jogos/:id` | Exclui jogo e suas reviews (regra 8) | Admin | — | `204` |
-| Reviews | GET | `/reviews`, `/reviews/:id` | Lista (filtros `id_jogo`, `id_usuario`) / consulta reviews, com `qtd_curtidas` | Pública | — | `200` |
-| Reviews | POST | `/reviews` | Publica review (autor = dono do token; regras 4, 5 e 6) | Logado | `id_jogo`, `titulo`, `comentario`, `nota` | `201`; `409` já avaliou o jogo |
-| Reviews | PUT | `/reviews/:id` | Edita a própria review (regras 3, 5 e 6) | Dono | `titulo`, `comentario`, `nota` | `200`; `403` se não for o autor |
-| Reviews | DELETE | `/reviews/:id` | Exclui uma review (regras 3 e 6) | Dono ou Admin | — | `204`; `403` se não for o autor nem administrador |
-| Reviews | POST | `/reviews/:id/curtida` | Marca a review como útil | Logado | — | `201` com `qtd_curtidas`; `409` se já curtiu |
-| Reviews | DELETE | `/reviews/:id/curtida` | Remove a própria curtida | Logado | — | `204`; `404` se não curtiu |
-| Reviews | POST | `/reviews/:id/denuncia` | Denuncia uma review inadequada | Logado | `motivo` | `201`; `409` se já denunciou |
-| Reviews | DELETE | `/reviews/denuncias/:id` | Descarta uma denúncia analisada (a review continua no ar; para remover a review use `DELETE /reviews/:id`) | Admin | — | `204`; `404` |
-| Reviews | GET | `/reviews/denuncias` | Lista as denúncias, para moderação | Admin | Query `limite`, `deslocamento` | `200` lista com `motivo`, `denunciante`, `titulo_review` |
-| RAWG | GET | `/rawg/jogos` | Busca até 10 jogos na RAWG pelo nome (primeiro passo para importar um jogo) | Admin | Query `busca` (obrigatória) | `200` lista com `rawg_id`, `titulo`, `data_lancamento`, `capa_url`, `ja_importado`; `400` sem `busca`; `502` se a RAWG falhar |
+**Legenda de acesso:** Público · Logado (qualquer usuário autenticado) · Próprio/Admin (o próprio usuário ou um Administrador) · Admin (somente Administrador)
+
+Rotas protegidas exigem o cabeçalho `Authorization: Bearer <token>`.
+
+### Saúde
+| Método | Rota | Descrição | Acesso |
+|---|---|---|---|
+| GET | `/health` | Verifica se a API e o banco estão no ar | Público |
+
+### Autenticação
+| Método | Rota | Descrição | Acesso |
+|---|---|---|---|
+| POST | `/auth/cadastro` | Cadastra um usuário (perfil sempre `COMUM`) | Público |
+| POST | `/auth/login` | Faz login e devolve o token JWT | Público |
+| GET | `/auth/eu` | Devolve o usuário dono do token | Logado |
+| POST | `/auth/esqueci-senha` | Envia por e-mail o link de recuperação de senha | Público |
+| GET | `/auth/redefinir-senha?token=...` | Página aberta pelo link do e-mail | Público |
+| POST | `/auth/redefinir-senha` | Troca a senha usando o token do e-mail | Público |
+
+### Usuários
+| Método | Rota | Descrição | Acesso |
+|---|---|---|---|
+| GET | `/usuarios` | Lista os usuários | Admin |
+| GET | `/usuarios/:id` | Obtém um usuário | Próprio/Admin |
+| PUT | `/usuarios/:id` | Atualiza os dados de um usuário | Próprio/Admin |
+| PATCH | `/usuarios/:id/perfil` | Altera o perfil (`COMUM` ou `ADMIN`) | Admin |
+| DELETE | `/usuarios/:id` | Exclui um usuário | Próprio/Admin |
+
+### Gêneros
+| Método | Rota | Descrição | Acesso |
+|---|---|---|---|
+| GET | `/generos` | Lista os gêneros | Público |
+| GET | `/generos/:id` | Obtém um gênero | Público |
+| POST | `/generos` | Cria um gênero | Admin |
+| PUT | `/generos/:id` | Atualiza um gênero | Admin |
+| DELETE | `/generos/:id` | Exclui um gênero (409 se houver jogos associados) | Admin |
+
+### Plataformas
+| Método | Rota | Descrição | Acesso |
+|---|---|---|---|
+| GET | `/plataformas` | Lista as plataformas | Público |
+| GET | `/plataformas/:id` | Obtém uma plataforma | Público |
+| POST | `/plataformas` | Cria uma plataforma | Admin |
+| PUT | `/plataformas/:id` | Atualiza uma plataforma | Admin |
+| DELETE | `/plataformas/:id` | Exclui uma plataforma (409 se houver jogos ligados) | Admin |
+
+### Jogos
+| Método | Rota | Descrição | Acesso |
+|---|---|---|---|
+| GET | `/jogos` | Lista jogos. Filtros: `busca`, `id_genero`, `id_plataforma`, `limite`, `deslocamento` | Público |
+| GET | `/jogos/:id` | Obtém um jogo com suas plataformas | Público |
+| POST | `/jogos` | Cadastra um jogo manualmente | Admin |
+| POST | `/jogos/importar` | Importa um jogo da RAWG (`{ "rawg_id": 3498 }`) | Admin |
+| PUT | `/jogos/:id` | Atualiza um jogo | Admin |
+| DELETE | `/jogos/:id` | Exclui um jogo (e suas reviews) | Admin |
+
+### Reviews
+| Método | Rota | Descrição | Acesso |
+|---|---|---|---|
+| GET | `/reviews` | Lista reviews. Filtros: `id_jogo`, `id_usuario`, `limite`, `deslocamento` | Público |
+| GET | `/reviews/:id` | Obtém uma review | Público |
+| POST | `/reviews` | Cria uma review (nota de 0 a 10) | Logado |
+| PUT | `/reviews/:id` | Edita a review (somente o autor) | Logado |
+| DELETE | `/reviews/:id` | Exclui a review (autor ou Admin) | Logado |
+| POST | `/reviews/:id/curtida` | Curte uma review | Logado |
+| DELETE | `/reviews/:id/curtida` | Remove a própria curtida (`204`) | Logado |
+| POST | `/reviews/:id/denuncia` | Denuncia uma review (`{ "motivo": "..." }`) | Logado |
+| GET | `/reviews/denuncias` | Lista as denúncias | Admin |
+| DELETE | `/reviews/denuncias/:id` | Descarta uma denúncia | Admin |
+
+### RAWG
+| Método | Rota | Descrição | Acesso |
+|---|---|---|---|
+| GET | `/rawg/jogos?busca=zelda` | Busca até 10 jogos na RAWG (ou no mock, com `RAWG_MOCK=1`) | Admin |

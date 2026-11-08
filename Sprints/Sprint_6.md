@@ -1,7 +1,5 @@
 # Sprint 6
 
-2026-11-05
-
 ## Objetivo
 
 A Sprint 6 revisou a arquitetura da API de reviews de jogos para atender ao requisito 2.5 do desafio: separar regras de negócio, interface HTTP, persistência e integrações externas, com as dependências apontando para dentro. O trabalho teve duas etapas:
@@ -97,3 +95,18 @@ O que está coberto:
 - Jogos e plataformas: importação da RAWG duplicada (409), gravação de gênero, jogo e plataformas, plataforma inexistente (400) e plataforma com jogos ligados não é excluída (409).
 
 Também foi feita uma checagem estática: 80 imports relativos válidos, nenhum caso de uso importa MySQL, bcrypt, JWT ou SMTP, e não há SQL fora de `Database/`.
+
+
+
+## Migrações automáticas do banco (08/11)**
+- Problema: a tabela `recuperacao_senha` não existia num banco antigo, e `POST /auth/esqueci-senha` dava `500`. O `schema.sql` só roda na criação do volume do MySQL.
+- Solução: a API aplica a cada subida os arquivos `Src/Database/migrations/NNN_nome.sql` ainda não executados, anotando-os em `schema_migrations`. Se uma migração falhar, a API não sobe.
+- `npm run migrar` aplica as migrações sem subir a API.
+
+## Modo falso da RAWG (08/11)**
+- Com a RAWG fora do ar e sem chave, não era possível testar a busca e a importação.
+- `RAWG_MOCK=1` troca a RAWG pelo `rawgGatewayFake.js`, com 6 jogos de exemplo e erros simuláveis (`erro502`, `erro503` e `rawg_id` inexistente).
+
+## Collection do Postman (08/11)**
+- Foram adicionadas 15 requisições de `DELETE` com casos de erro (`401`, `403`, `404` e `409`).
+.

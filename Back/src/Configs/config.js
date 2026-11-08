@@ -48,6 +48,8 @@ export const config = {
 
   rawg: {
     chave: process.env.RAWG_API_KEY,
+    // Com RAWG_MOCK=1 a API usa dados falsos no lugar da RAWG (veja rawgGatewayFake.js)
+    mock: process.env.RAWG_MOCK === "1",
   },
 
   // Administrador inicial, criado na subida da API se ainda não existir

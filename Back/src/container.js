@@ -9,6 +9,7 @@ import { criarSenhaGateway } from "./Apps/gateways/senhaGateway.js";
 import { criarTokenGateway } from "./Apps/gateways/tokenGateway.js";
 import { criarEmailGateway } from "./Apps/gateways/emailGateway.js";
 import { criarRawgGateway } from "./Apps/gateways/rawgGateway.js";
+import { criarRawgGatewayFake } from "./Apps/gateways/rawgGatewayFake.js";
 import { criarAuthUseCases } from "./Apps/useCases/authUseCases.js";
 import { criarUsuariosUseCases } from "./Apps/useCases/usuariosUseCases.js";
 import { criarGenerosUseCases } from "./Apps/useCases/generosUseCases.js";
@@ -25,7 +26,10 @@ const unitOfWork = criarUnitOfWork(pool);
 const senhaGateway = criarSenhaGateway();
 const tokenGateway = criarTokenGateway(config);
 const emailGateway = criarEmailGateway(config);
-const rawgGateway = criarRawgGateway(config.rawg);
+// RAWG_MOCK=1 troca a RAWG real por dados falsos (sem internet e sem chave)
+const rawgGateway = config.rawg.mock
+  ? criarRawgGatewayFake()
+  : criarRawgGateway(config.rawg);
 
 const base = { ...repositorios, unitOfWork };
 
