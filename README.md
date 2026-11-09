@@ -205,72 +205,75 @@ docker compose exec api npm run importar -- action 10
 Rotas protegidas exigem o cabeçalho `Authorization: Bearer <token>`.
 
 ### Saúde
-| Método | Rota | Descrição | Acesso |
-|---|---|---|---|
-| GET | `/health` | Verifica se a API e o banco estão no ar | Público |
+| Método | Rota | Descrição | Acesso | Exemplo de requisição | Exemplo de resposta |
+|---|---|---|---|---|---|
+| GET | `/health` | Verifica se a API e o banco estão no ar | Público | `GET /health` | `200`<br>`{ "api": "ok", "banco": "ok" }` |
 
 ### Autenticação
-| Método | Rota | Descrição | Acesso |
-|---|---|---|---|
-| POST | `/auth/cadastro` | Cadastra um usuário (perfil sempre `COMUM`) | Público |
-| POST | `/auth/login` | Faz login e devolve o token JWT | Público |
-| GET | `/auth/eu` | Devolve o usuário dono do token | Logado |
-| POST | `/auth/esqueci-senha` | Envia por e-mail o link de recuperação de senha | Público |
-| GET | `/auth/redefinir-senha?token=...` | Página aberta pelo link do e-mail | Público |
-| POST | `/auth/redefinir-senha` | Troca a senha usando o token do e-mail | Público |
+| Método | Rota | Descrição | Acesso | Exemplo de requisição | Exemplo de resposta |
+|---|---|---|---|---|---|
+| POST | `/auth/cadastro` | Cadastra um usuário (perfil sempre `COMUM`) | Público | `POST /auth/cadastro`<br>`{ "nome": "Maria Silva", "email": "maria@exemplo.com", "senha": "senha12345" }` | `201`<br>`{ "id_usuario": 2, "nome": "Maria Silva", "email": "maria@exemplo.com", "perfil": "COMUM" }`<br>`409` `{ "erro": "E-mail já cadastrado" }` |
+| POST | `/auth/login` | Faz login e devolve o token JWT | Público | `POST /auth/login`<br>`{ "email": "maria@exemplo.com", "senha": "senha12345" }` | `200`<br>`{ "token": "eyJhbGciOi...", "tipo": "Bearer", "expira_em": "2h", "usuario": { "id_usuario": 2, "nome": "Maria Silva", "email": "maria@exemplo.com", "perfil": "COMUM" } }`<br>`401` `{ "erro": "E-mail ou senha inválidos" }` |
+| GET | `/auth/eu` | Devolve o usuário dono do token | Logado | `GET /auth/eu`<br>`Authorization: Bearer <token>` | `200`<br>`{ "id_usuario": 2, "nome": "Maria Silva", "email": "maria@exemplo.com", "perfil": "COMUM" }`<br>`401` `{ "erro": "Token inválido ou expirado" }` |
+| POST | `/auth/esqueci-senha` | Envia por e-mail o link de recuperação de senha | Público | `POST /auth/esqueci-senha`<br>`{ "email": "maria@exemplo.com" }` | `200`<br>`{ "mensagem": "Se o e-mail estiver cadastrado, enviamos um link para redefinir a senha." }` |
+| GET | `/auth/redefinir-senha?token=...` | Página aberta pelo link do e-mail | Público | `GET /auth/redefinir-senha?token=9f2c1a7e...` | `200`<br>Página HTML com o formulário de nova senha |
+| POST | `/auth/redefinir-senha` | Troca a senha usando o token do e-mail | Público | `POST /auth/redefinir-senha`<br>`{ "token": "9f2c1a7e...", "nova_senha": "novaSenha456" }` | `200`<br>`{ "mensagem": "Senha redefinida com sucesso. Faça login com a nova senha." }`<br>`400` `{ "erro": "Link inválido ou expirado. Peça a recuperação de senha novamente." }` |
 
 ### Usuários
-| Método | Rota | Descrição | Acesso |
-|---|---|---|---|
-| GET | `/usuarios` | Lista os usuários | Admin |
-| GET | `/usuarios/:id` | Obtém um usuário | Próprio/Admin |
-| PUT | `/usuarios/:id` | Atualiza os dados de um usuário | Próprio/Admin |
-| PATCH | `/usuarios/:id/perfil` | Altera o perfil (`COMUM` ou `ADMIN`) | Admin |
-| DELETE | `/usuarios/:id` | Exclui um usuário | Próprio/Admin |
+| Método | Rota | Descrição | Acesso | Exemplo de requisição | Exemplo de resposta |
+|---|---|---|---|---|---|
+| GET | `/usuarios` | Lista os usuários | Admin | `GET /usuarios`<br>`Authorization: Bearer <token_admin>` | `200`<br>`[ { "id_usuario": 1, "nome": "Administrador", "email": "admin@exemplo.com", "perfil": "ADMIN", "criado_em": "2026-11-08T12:00:00.000Z" }, { "id_usuario": 2, "nome": "Maria Silva", "email": "maria@exemplo.com", "perfil": "COMUM", "criado_em": "2026-11-08T15:30:00.000Z" } ]` |
+| GET | `/usuarios/:id` | Obtém um usuário | Próprio/Admin | `GET /usuarios/2`<br>`Authorization: Bearer <token>` | `200`<br>`{ "id_usuario": 2, "nome": "Maria Silva", "email": "maria@exemplo.com", "perfil": "COMUM", "criado_em": "2026-11-08T15:30:00.000Z" }`<br>`403` `{ "erro": "Acesso negado: você só pode acessar a sua própria conta" }` |
+| PUT | `/usuarios/:id` | Atualiza os dados de um usuário | Próprio/Admin | `PUT /usuarios/2`<br>`{ "nome": "Maria S. Oliveira", "email": "maria.oliveira@exemplo.com" }` | `200`<br>`{ "id_usuario": 2, "nome": "Maria S. Oliveira", "email": "maria.oliveira@exemplo.com", "perfil": "COMUM", "criado_em": "2026-11-08T15:30:00.000Z" }` |
+| PATCH | `/usuarios/:id/perfil` | Altera o perfil (`COMUM` ou `ADMIN`) | Admin | `PATCH /usuarios/2/perfil`<br>`{ "perfil": "ADMIN" }` | `200`<br>`{ "id_usuario": 2, "nome": "Maria Silva", "email": "maria@exemplo.com", "perfil": "ADMIN", "criado_em": "2026-11-08T15:30:00.000Z" }`<br>`409` `{ "erro": "Não é possível rebaixar o único administrador" }` |
+| DELETE | `/usuarios/:id` | Exclui um usuário | Próprio/Admin | `DELETE /usuarios/2`<br>`Authorization: Bearer <token>` | `204`<br>Sem corpo<br>`409` `{ "erro": "Não é possível excluir o único administrador" }` |
 
 ### Gêneros
-| Método | Rota | Descrição | Acesso |
-|---|---|---|---|
-| GET | `/generos` | Lista os gêneros | Público |
-| GET | `/generos/:id` | Obtém um gênero | Público |
-| POST | `/generos` | Cria um gênero | Admin |
-| PUT | `/generos/:id` | Atualiza um gênero | Admin |
-| DELETE | `/generos/:id` | Exclui um gênero (409 se houver jogos associados) | Admin |
+| Método | Rota | Descrição | Acesso | Exemplo de requisição | Exemplo de resposta |
+|---|---|---|---|---|---|
+| GET | `/generos` | Lista os gêneros | Público | `GET /generos` | `200`<br>`[ { "id_genero": 1, "nome": "Action", "descricao": null }, { "id_genero": 2, "nome": "RPG", "descricao": "Jogos de interpretação de papéis" } ]` |
+| GET | `/generos/:id` | Obtém um gênero | Público | `GET /generos/2` | `200`<br>`{ "id_genero": 2, "nome": "RPG", "descricao": "Jogos de interpretação de papéis" }`<br>`404` `{ "erro": "Gênero não encontrado" }` |
+| POST | `/generos` | Cria um gênero | Admin | `POST /generos`<br>`{ "nome": "Estratégia", "descricao": "Jogos de planejamento e tática" }` | `201`<br>`{ "id_genero": 3, "nome": "Estratégia", "descricao": "Jogos de planejamento e tática" }`<br>`409` `{ "erro": "Já existe um gênero com esse nome" }` |
+| PUT | `/generos/:id` | Atualiza um gênero | Admin | `PUT /generos/3`<br>`{ "nome": "Estratégia em Tempo Real", "descricao": "RTS" }` | `200`<br>`{ "id_genero": 3, "nome": "Estratégia em Tempo Real", "descricao": "RTS" }` |
+| DELETE | `/generos/:id` | Exclui um gênero (409 se houver jogos associados) | Admin | `DELETE /generos/3`<br>`Authorization: Bearer <token_admin>` | `204`<br>Sem corpo<br>`409` `{ "erro": "Não é possível excluir: existem jogos associados a este gênero" }` |
 
 ### Plataformas
-| Método | Rota | Descrição | Acesso |
-|---|---|---|---|
-| GET | `/plataformas` | Lista as plataformas | Público |
-| GET | `/plataformas/:id` | Obtém uma plataforma | Público |
-| POST | `/plataformas` | Cria uma plataforma | Admin |
-| PUT | `/plataformas/:id` | Atualiza uma plataforma | Admin |
-| DELETE | `/plataformas/:id` | Exclui uma plataforma (409 se houver jogos ligados) | Admin |
+| Método | Rota | Descrição | Acesso | Exemplo de requisição | Exemplo de resposta |
+|---|---|---|---|---|---|
+| GET | `/plataformas` | Lista as plataformas | Público | `GET /plataformas` | `200`<br>`[ { "id_plataforma": 1, "nome": "Nintendo Switch", "qtd_jogos": 2 }, { "id_plataforma": 2, "nome": "PC", "qtd_jogos": 5 } ]` |
+| GET | `/plataformas/:id` | Obtém uma plataforma | Público | `GET /plataformas/2` | `200`<br>`{ "id_plataforma": 2, "nome": "PC", "qtd_jogos": 5 }`<br>`404` `{ "erro": "Plataforma não encontrada" }` |
+| POST | `/plataformas` | Cria uma plataforma | Admin | `POST /plataformas`<br>`{ "nome": "Xbox Series X" }` | `201`<br>`{ "id_plataforma": 4, "nome": "Xbox Series X", "qtd_jogos": 0 }` |
+| PUT | `/plataformas/:id` | Atualiza uma plataforma | Admin | `PUT /plataformas/4`<br>`{ "nome": "Xbox Series" }` | `200`<br>`{ "id_plataforma": 4, "nome": "Xbox Series", "qtd_jogos": 0 }` |
+| DELETE | `/plataformas/:id` | Exclui uma plataforma (409 se houver jogos ligados) | Admin | `DELETE /plataformas/4`<br>`Authorization: Bearer <token_admin>` | `204`<br>Sem corpo<br>`409` `{ "erro": "Não é possível excluir: existem jogos ligados a esta plataforma. Remova a plataforma desses jogos antes" }` |
 
 ### Jogos
-| Método | Rota | Descrição | Acesso |
-|---|---|---|---|
-| GET | `/jogos` | Lista jogos. Filtros: `busca`, `id_genero`, `id_plataforma`, `limite`, `deslocamento` | Público |
-| GET | `/jogos/:id` | Obtém um jogo com suas plataformas | Público |
-| POST | `/jogos` | Cadastra um jogo manualmente | Admin |
-| POST | `/jogos/importar` | Importa um jogo da RAWG (`{ "rawg_id": 3498 }`) | Admin |
-| PUT | `/jogos/:id` | Atualiza um jogo | Admin |
-| DELETE | `/jogos/:id` | Exclui um jogo (e suas reviews) | Admin |
+| Método | Rota | Descrição | Acesso | Exemplo de requisição | Exemplo de resposta |
+|---|---|---|---|---|---|
+| GET | `/jogos` | Lista jogos. Filtros: `busca`, `id_genero`, `id_plataforma`, `limite`, `deslocamento` | Público | `GET /jogos?busca=portal&id_genero=3&id_plataforma=2&limite=10&deslocamento=0` | `200`<br>`[ { "id_jogo": 3, "titulo": "Portal 2", "id_genero": 3, "genero": "Puzzle", "desenvolvedora": "Valve", "publicadora": "Valve", "descricao": "Quebra-cabeça em primeira pessoa com portais.", "data_lancamento": "2011-04-18T00:00:00.000Z", "nota_media": "9.0", "capa_url": "https://placehold.co/600x400?text=Portal+2", "rawg_id": 4200, "qtd_reviews": 3 } ]` |
+| GET | `/jogos/:id` | Obtém um jogo com suas plataformas | Público | `GET /jogos/1` | `200`<br>`{ "id_jogo": 1, "titulo": "Grand Theft Auto V", "id_genero": 1, "genero": "Action", "desenvolvedora": "Rockstar North", "publicadora": "Rockstar Games", "descricao": "Jogo de ação em mundo aberto.", "data_lancamento": "2013-09-17T00:00:00.000Z", "nota_media": "9.5", "capa_url": "https://placehold.co/600x400?text=GTA+V", "rawg_id": 3498, "qtd_reviews": 2, "plataformas": [ { "id_plataforma": 2, "nome": "PC" }, { "id_plataforma": 3, "nome": "PlayStation 4" } ] }`<br>`404` `{ "erro": "Jogo não encontrado" }` |
+| POST | `/jogos` | Cadastra um jogo manualmente | Admin | `POST /jogos`<br>`{ "id_genero": 1, "titulo": "Hollow Knight", "desenvolvedora": "Team Cherry", "publicadora": "Team Cherry", "descricao": "Metroidvania em um reino de insetos.", "data_lancamento": "2017-02-24", "capa_url": "https://exemplo.com/hollow-knight.jpg", "plataformas": [1, 2] }` | `201`<br>`{ "id_jogo": 7, "titulo": "Hollow Knight", "id_genero": 1, "genero": "Action", "desenvolvedora": "Team Cherry", "publicadora": "Team Cherry", "descricao": "Metroidvania em um reino de insetos.", "data_lancamento": "2017-02-24T00:00:00.000Z", "nota_media": "0.0", "capa_url": "https://exemplo.com/hollow-knight.jpg", "rawg_id": null, "qtd_reviews": 0, "plataformas": [ { "id_plataforma": 1, "nome": "Nintendo Switch" }, { "id_plataforma": 2, "nome": "PC" } ] }`<br>`400` `{ "erro": "titulo é obrigatório" }` |
+| POST | `/jogos/importar` | Importa um jogo da RAWG (`{ "rawg_id": 3498 }`) | Admin | `POST /jogos/importar`<br>`{ "rawg_id": 3498 }` | `201`<br>`{ "id_jogo": 1, "titulo": "Grand Theft Auto V", "id_genero": 1, "genero": "Action", "desenvolvedora": "Rockstar North", "publicadora": "Rockstar Games", "descricao": "Jogo de ação em mundo aberto.", "data_lancamento": "2013-09-17T00:00:00.000Z", "nota_media": "0.0", "capa_url": "https://placehold.co/600x400?text=GTA+V", "rawg_id": 3498, "qtd_reviews": 0, "plataformas": [ { "id_plataforma": 2, "nome": "PC" } ] }`<br>`409` `{ "erro": "Este jogo já foi importado (id_jogo 1)" }` |
+| PUT | `/jogos/:id` | Atualiza um jogo | Admin | `PUT /jogos/7`<br>`{ "descricao": "Descrição atualizada.", "plataformas": [2] }` | `200`<br>`{ "id_jogo": 7, "titulo": "Hollow Knight", "id_genero": 1, "genero": "Action", "desenvolvedora": "Team Cherry", "publicadora": "Team Cherry", "descricao": "Descrição atualizada.", "data_lancamento": "2017-02-24T00:00:00.000Z", "nota_media": "0.0", "capa_url": "https://exemplo.com/hollow-knight.jpg", "rawg_id": null, "qtd_reviews": 0, "plataformas": [ { "id_plataforma": 2, "nome": "PC" } ] }`<br>`400` `{ "erro": "Informe ao menos um campo para atualizar" }` |
+| DELETE | `/jogos/:id` | Exclui um jogo (e suas reviews) | Admin | `DELETE /jogos/7`<br>`Authorization: Bearer <token_admin>` | `204`<br>Sem corpo |
 
 ### Reviews
-| Método | Rota | Descrição | Acesso |
-|---|---|---|---|
-| GET | `/reviews` | Lista reviews. Filtros: `id_jogo`, `id_usuario`, `limite`, `deslocamento` | Público |
-| GET | `/reviews/:id` | Obtém uma review | Público |
-| POST | `/reviews` | Cria uma review (nota de 0 a 10) | Logado |
-| PUT | `/reviews/:id` | Edita a review (somente o autor) | Logado |
-| DELETE | `/reviews/:id` | Exclui a review (autor ou Admin) | Logado |
-| POST | `/reviews/:id/curtida` | Curte uma review | Logado |
-| DELETE | `/reviews/:id/curtida` | Remove a própria curtida (`204`) | Logado |
-| POST | `/reviews/:id/denuncia` | Denuncia uma review (`{ "motivo": "..." }`) | Logado |
-| GET | `/reviews/denuncias` | Lista as denúncias | Admin |
-| DELETE | `/reviews/denuncias/:id` | Descarta uma denúncia | Admin |
+| Método | Rota | Descrição | Acesso | Exemplo de requisição | Exemplo de resposta |
+|---|---|---|---|---|---|
+| GET | `/reviews` | Lista reviews. Filtros: `id_jogo`, `id_usuario`, `limite`, `deslocamento` | Público | `GET /reviews?id_jogo=1&limite=5&deslocamento=0` | `200`<br>`[ { "id_review": 1, "id_usuario": 2, "autor": "Maria Silva", "id_jogo": 1, "jogo": "Grand Theft Auto V", "titulo": "Mundo aberto sensacional", "comentario": "Vale cada hora de jogo.", "nota": "9.5", "criado_em": "2026-11-08T16:00:00.000Z", "atualizado_em": "2026-11-08T16:00:00.000Z", "qtd_curtidas": 4 } ]` |
+| GET | `/reviews/:id` | Obtém uma review | Público | `GET /reviews/1` | `200`<br>`{ "id_review": 1, "id_usuario": 2, "autor": "Maria Silva", "id_jogo": 1, "jogo": "Grand Theft Auto V", "titulo": "Mundo aberto sensacional", "comentario": "Vale cada hora de jogo.", "nota": "9.5", "criado_em": "2026-11-08T16:00:00.000Z", "atualizado_em": "2026-11-08T16:00:00.000Z", "qtd_curtidas": 4 }`<br>`404` `{ "erro": "Review não encontrada" }` |
+| POST | `/reviews` | Cria uma review (nota de 0 a 10) | Logado | `POST /reviews`<br>`{ "id_jogo": 1, "titulo": "Mundo aberto sensacional", "comentario": "Vale cada hora de jogo.", "nota": 9.5 }` | `201`<br>`{ "id_review": 1, "id_usuario": 2, "autor": "Maria Silva", "id_jogo": 1, "jogo": "Grand Theft Auto V", "titulo": "Mundo aberto sensacional", "comentario": "Vale cada hora de jogo.", "nota": "9.5", "criado_em": "2026-11-08T16:00:00.000Z", "atualizado_em": "2026-11-08T16:00:00.000Z", "qtd_curtidas": 0 }`<br>`400` `{ "erro": "nota deve estar entre 0,0 e 10,0" }`<br>`409` `{ "erro": "Você já avaliou este jogo. Edite a review existente" }` |
+| PUT | `/reviews/:id` | Edita a review (somente o autor) | Logado | `PUT /reviews/1`<br>`{ "nota": 10, "comentario": "Depois de zerar, mudei minha nota." }` | `200`<br>`{ "id_review": 1, "id_usuario": 2, "autor": "Maria Silva", "id_jogo": 1, "jogo": "Grand Theft Auto V", "titulo": "Mundo aberto sensacional", "comentario": "Depois de zerar, mudei minha nota.", "nota": "10.0", "criado_em": "2026-11-08T16:00:00.000Z", "atualizado_em": "2026-11-08T17:20:00.000Z", "qtd_curtidas": 4 }`<br>`403` `{ "erro": "Acesso negado: somente o autor pode editar esta review" }` |
+| DELETE | `/reviews/:id` | Exclui a review (autor ou Admin) | Logado | `DELETE /reviews/1`<br>`Authorization: Bearer <token>` | `204`<br>Sem corpo<br>`403` `{ "erro": "Acesso negado: somente o autor ou um administrador pode excluir esta review" }` |
+| POST | `/reviews/:id/curtida` | Curte uma review | Logado | `POST /reviews/1/curtida`<br>Sem corpo | `201`<br>`{ "id_review": 1, "qtd_curtidas": 5 }`<br>`409` `{ "erro": "Você já curtiu esta review" }` |
+| DELETE | `/reviews/:id/curtida` | Remove a própria curtida (`204`) | Logado | `DELETE /reviews/1/curtida`<br>`Authorization: Bearer <token>` | `204`<br>Sem corpo<br>`404` `{ "erro": "Você não curtiu esta review" }` |
+| POST | `/reviews/:id/denuncia` | Denuncia uma review (`{ "motivo": "..." }`) | Logado | `POST /reviews/1/denuncia`<br>`{ "motivo": "Contém spoilers sem aviso" }` | `201`<br>`{ "id_denuncia": 1, "id_review": 1, "motivo": "Contém spoilers sem aviso" }`<br>`409` `{ "erro": "Você já denunciou esta review" }` |
+| GET | `/reviews/denuncias` | Lista as denúncias | Admin | `GET /reviews/denuncias?limite=20&deslocamento=0`<br>`Authorization: Bearer <token_admin>` | `200`<br>`[ { "id_denuncia": 1, "id_review": 1, "titulo_review": "Mundo aberto sensacional", "id_autor": 2, "id_denunciante": 3, "denunciante": "João Souza", "motivo": "Contém spoilers sem aviso", "criado_em": "2026-11-08T18:05:00.000Z" } ]` |
+| DELETE | `/reviews/denuncias/:id` | Descarta uma denúncia | Admin | `DELETE /reviews/denuncias/1`<br>`Authorization: Bearer <token_admin>` | `204`<br>Sem corpo<br>`404` `{ "erro": "Denúncia não encontrada" }` |
 
 ### RAWG
-| Método | Rota | Descrição | Acesso |
-|---|---|---|---|
-| GET | `/rawg/jogos?busca=zelda` | Busca até 10 jogos na RAWG (ou no mock, com `RAWG_MOCK=1`) | Admin |
+| Método | Rota | Descrição | Acesso | Exemplo de requisição | Exemplo de resposta |
+|---|---|---|---|---|---|
+| GET | `/rawg/jogos?busca=zelda` | Busca até 10 jogos na RAWG (ou no mock, com `RAWG_MOCK=1`) | Admin | `GET /rawg/jogos?busca=zelda`<br>`Authorization: Bearer <token_admin>` | `200`<br>`[ { "rawg_id": 22511, "titulo": "The Legend of Zelda: Breath of the Wild", "data_lancamento": "2017-03-03", "capa_url": "https://placehold.co/600x400?text=Zelda+BotW", "ja_importado": false } ]`<br>`502` `{ "erro": "Não foi possível consultar a RAWG" }` |
+
+Rotas protegidas exigem o cabeçalho `Authorization: Bearer <token>`.
+
